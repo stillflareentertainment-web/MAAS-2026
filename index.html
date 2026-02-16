@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STILLFLARE // Dashboard v1.7</title>
+    <title>STILLFLARE // Intelligence Suite v2.0</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root {
             --brand-blue: #0061ff;
+            --brand-green: #00d084;
             --bg-light: #f7f9fc;
             --card-bg: #ffffff;
             --text-main: #1a1f36;
@@ -14,165 +17,174 @@
             --border-color: #e3e8ee;
         }
 
-        body {
-            background-color: var(--bg-light);
-            color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            display: flex;
-            justify-content: center;
-            padding: 40px 20px;
-            margin: 0;
-        }
+        body { background-color: var(--bg-light); color: var(--text-main); font-family: -apple-system, BlinkMacSystemFont, sans-serif; display: flex; justify-content: center; padding: 40px 20px; margin: 0; }
+        
+        .dashboard-card { background: var(--card-bg); width: 100%; max-width: 700px; padding: 40px; border-radius: 20px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
 
-        .dashboard-card {
-            background: var(--card-bg);
-            width: 100%;
-            max-width: 520px;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        }
+        .header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; }
+        
+        /* ANALYTICS RADIUS */
+        .chart-container { margin: 30px 0; height: 300px; position: relative; }
 
-        .pulse-section {
-            text-align: center;
-            margin-bottom: 32px;
-            padding: 24px;
-            background: #f8fbff;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-        }
+        .pulse-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
+        .pulse-stat { padding: 20px; background: #f8fbff; border-radius: 12px; border: 1px solid var(--border-color); text-align: center; }
+        .pulse-stat.personal { background: #f6fffa; border-color: #d1f7e4; }
+        .stat-val { font-size: 32px; font-weight: 800; color: var(--brand-blue); }
+        .pulse-stat.personal .stat-val { color: var(--brand-green); }
+        .stat-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
 
-        .pulse-label { font-size: 11px; font-weight: 700; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
-        .pulse-value { font-size: 54px; font-weight: 800; color: var(--brand-blue); line-height: 1; }
-        .sample-size { font-size: 13px; color: var(--text-muted); margin-top: 8px; font-weight: 500; }
+        /* INPUT AREA */
+        .logic-framework { border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 30px; font-size: 13px; }
+        .slider-container { margin-bottom: 20px; }
+        .slider-header { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+        
+        input[type="range"] { width: 100%; height: 6px; background: #dcdfe4; border-radius: 5px; appearance: none; outline: none; }
+        input[type="range"]::-webkit-slider-thumb { appearance: none; width: 18px; height: 18px; background: var(--brand-blue); border-radius: 50%; cursor: pointer; border: 3px solid white; }
 
-        h1 { font-size: 22px; font-weight: 700; margin-bottom: 8px; color: var(--text-main); }
-        .sub-header { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.5; }
-
-        /* LOGIC FRAMEWORK WITH NOTE */
-        .logic-framework {
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 30px;
-        }
-
-        .logic-title { font-size: 12px; font-weight: 700; color: var(--brand-blue); text-transform: uppercase; margin-bottom: 15px; border-bottom: 1px solid #f0f0f0; padding-bottom: 5px; }
-        .def-item { margin-bottom: 12px; font-size: 13px; line-height: 1.4; }
-        .def-item strong { color: var(--text-main); font-weight: 600; }
-        .scientific-label { font-size: 10px; color: var(--brand-blue); display: block; font-family: monospace; }
-
-        .persona-note {
-            font-size: 12px;
-            color: var(--text-muted);
-            font-style: italic;
-            margin-top: 15px;
-            padding-top: 10px;
-            border-top: 1px dashed var(--border-color);
-        }
-
-        /* SLIDERS */
-        .slider-container { margin-bottom: 24px; }
-        .slider-header { display: flex; justify-content: space-between; font-size: 14px; font-weight: 600; color: var(--text-main); margin-bottom: 8px; }
-
-        input[type="range"] {
-            width: 100%; height: 6px; background: #dcdfe4; border-radius: 5px; appearance: none; outline: none;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-            appearance: none; width: 22px; height: 22px; background: var(--brand-blue); border-radius: 50%; cursor: pointer; border: 4px solid white; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        #submitBtn {
-            width: 100%; padding: 18px; background-color: var(--brand-blue); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.2s;
-        }
-
-        #submitBtn:hover { transform: translateY(-1px); box-shadow: 0 10px 15px -3px rgba(0, 97, 255, 0.4); }
-        #statusMsg { margin-top: 16px; font-size: 13px; color: var(--text-muted); text-align: center; }
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        button { padding: 15px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.2s; border: none; }
+        .btn-primary { background: var(--brand-blue); color: white; }
+        .btn-secondary { background: #1a1f36; color: white; }
+        button:hover { opacity: 0.9; transform: translateY(-1px); }
+        
+        #statusMsg { margin-top: 15px; font-size: 12px; color: var(--text-muted); text-align: center; }
     </style>
 </head>
 <body>
 
-    <div class="dashboard-card">
-        <div class="pulse-section">
-            <div class="pulse-label">MAAS Community Pulse</div>
-            <div id="livePulseVal" class="pulse-value">--%</div>
-            <div id="sampleCount" class="sample-size">Initializing telemetry...</div>
+    <div class="dashboard-card" id="capture-area">
+        <div class="header-flex">
+            <div>
+                <h1>Stillflare Intelligence Suite</h1>
+                <div class="stat-label">System Status: Active // Local Identity Secured</div>
+            </div>
+            <img src="https://via.placeholder.com/50/0061ff/ffffff?text=MAAS" style="border-radius: 8px;" alt="Logo">
         </div>
 
-        <h1>Stillflare Intelligence Engine</h1>
-        <p class="sub-header">Multi-Agent Analytics System quantifying real-time operational sentiment.</p>
-
-        <div class="logic-framework">
-            <div class="logic-title">MAAS Logic Framework</div>
-            <div class="def-item"><span class="scientific-label">INDEX: QS</span><strong>Quality of Service:</strong> System stability and reliability.</div>
-            <div class="def-item"><span class="scientific-label">INDEX: OI</span><strong>Operational Intelligence:</strong> Clarity of information flow vs. environmental noise.</div>
-            <div class="def-item"><span class="scientific-label">INDEX: IC</span><strong>Internal Capability:</strong> Readiness and strength of available assets.</div>
-            <div class="def-item"><span class="scientific-label">INDEX: EP</span><strong>Engine Power:</strong> Raw velocity and drive of the ecosystem.</div>
-
-            <div class="persona-note">
-                * Note: If Person A feels the system is stable (90% QS) but team info is confusing (30% OI), they would adjust accordingly while keeping their high personal readiness (85% IC) and project speed (95% EP) in view.
+        <div class="pulse-grid">
+            <div class="pulse-stat">
+                <div class="stat-label">Global Community Pulse</div>
+                <div id="globalPulse" class="stat-val">--%</div>
+            </div>
+            <div class="pulse-stat personal">
+                <div class="stat-label">Your Personal Pulse</div>
+                <div id="personalPulse" class="stat-val">--%</div>
             </div>
         </div>
 
-        <div class="slider-container">
-            <div class="slider-header"><span>Quality of Service</span><span id="qsVal">50%</span></div>
-            <input type="range" id="qs" min="0" max="100" value="50" oninput="update('qs')">
-        </div>
-        <div class="slider-container">
-            <div class="slider-header"><span>Operational Intelligence</span><span id="oiVal">50%</span></div>
-            <input type="range" id="oi" min="0" max="100" value="50" oninput="update('oi')">
-        </div>
-        <div class="slider-container">
-            <div class="slider-header"><span>Internal Capability</span><span id="icVal">50%</span></div>
-            <input type="range" id="ic" min="0" max="100" value="50" oninput="update('ic')">
-        </div>
-        <div class="slider-container">
-            <div class="slider-header"><span>Engine Power</span><span id="epVal">50%</span></div>
-            <input type="range" id="ep" min="0" max="100" value="50" oninput="update('ep')">
+        <div class="chart-container">
+            <canvas id="mainChart"></canvas>
         </div>
 
-        <button id="submitBtn" onclick="submitToPulse()">Transmit Updates</button>
-        <div id="statusMsg">Ready for telemetry sync.</div>
+        <div class="logic-framework">
+            <div class="slider-container">
+                <div class="slider-header"><span>Quality of Service (QS)</span><span id="qsVal">50%</span></div>
+                <input type="range" id="qs" min="0" max="100" value="50" oninput="updateVal('qs')">
+            </div>
+            <div class="slider-container">
+                <div class="slider-header"><span>Operational Intelligence (OI)</span><span id="oiVal">50%</span></div>
+                <input type="range" id="oi" min="0" max="100" value="50" oninput="updateVal('oi')">
+            </div>
+            <div class="slider-container">
+                <div class="slider-header"><span>Internal Capability (IC)</span><span id="icVal">50%</span></div>
+                <input type="range" id="ic" min="0" max="100" value="50" oninput="updateVal('ic')">
+            </div>
+            <div class="slider-container">
+                <div class="slider-header"><span>Engine Power (EP)</span><span id="epVal">50%</span></div>
+                <input type="range" id="ep" min="0" max="100" value="50" oninput="updateVal('ep')">
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn-primary" onclick="transmitData()">Transmit & Save</button>
+            <button class="btn-secondary" onclick="exportPDF()">Export Intelligence PDF</button>
+        </div>
+        <div id="statusMsg">Ready for telemetry ingestion.</div>
     </div>
 
     <script>
         const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRRO9rzX0DOaCBEppRFcRXtsIxxgK6fT6KIxAjFhq44PaoBEAtEy8fwjTEFNc9QZofF2P9srq0eYT4c/pub?gid=718698897&single=true&output=csv";
+        let mainChart;
 
-        function update(id) {
-            document.getElementById(id + 'Val').innerText = document.getElementById(id).value + '%';
+        function updateVal(id) { document.getElementById(id + 'Val').innerText = document.getElementById(id).value + '%'; }
+
+        // Initialize Chart
+        function initChart() {
+            const ctx = document.getElementById('mainChart').getContext('2d');
+            mainChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [], 
+                    datasets: [
+                        { label: 'Community Pulse', borderColor: '#0061ff', data: [], tension: 0.4, fill: false },
+                        { label: 'My Pulse', borderColor: '#00d084', data: [], tension: 0.4, fill: false }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
         }
 
-        async function refreshPulse() {
+        async function syncData() {
             try {
                 const response = await fetch(CSV_URL + "&cb=" + Date.now());
                 const data = await response.text();
                 const rows = data.split('\n').filter(r => r.trim() !== "").slice(1);
-                let totalScore = 0;
-                rows.forEach(r => {
+                
+                let communityHistory = [];
+                let total = 0;
+
+                rows.forEach((r, index) => {
                     const c = r.split(',');
-                    if (c.length >= 5) totalScore += (parseInt(c[1]) + parseInt(c[2]) + parseInt(c[3]) + parseInt(c[4])) / 4;
+                    const avg = (parseInt(c[1]) + parseInt(c[2]) + parseInt(c[3]) + parseInt(c[4])) / 4;
+                    communityHistory.push(avg);
+                    total += avg;
                 });
-                document.getElementById('livePulseVal').innerText = (rows.length > 0 ? Math.round(totalScore / rows.length) : 0) + "%";
-                document.getElementById('sampleCount').innerText = `Calculated from ${rows.length} unique transmissions`;
+
+                const globalAvg = Math.round(total / rows.length);
+                document.getElementById('globalPulse').innerText = globalAvg + "%";
+
+                // Load Personal Data from LocalStorage
+                const personalHistory = JSON.parse(localStorage.getItem('stillflare_history') || "[]");
+                if (personalHistory.length > 0) {
+                    const latestPersonal = personalHistory[personalHistory.length - 1];
+                    document.getElementById('personalPulse').innerText = latestPersonal + "%";
+                }
+
+                // Update Chart
+                mainChart.data.labels = Array.from({length: Math.max(rows.length, personalHistory.length)}, (_, i) => i + 1);
+                mainChart.data.datasets[0].data = communityHistory;
+                mainChart.data.datasets[1].data = personalHistory;
+                mainChart.update();
             } catch (e) { console.error("Sync Error"); }
         }
 
-        async function submitToPulse() {
-            const btn = document.getElementById('submitBtn');
-            const msg = document.getElementById('statusMsg');
-            const formID = "1FAIpQLSeqartuUmgNYc5RWaREX2yX0aGJU8_hWgAw8GKZiLK2QoXFpQ";
-            const url = `https://docs.google.com/forms/d/e/${formID}/formResponse?entry.931849910=${document.getElementById('qs').value}&entry.1206314523=${document.getElementById('oi').value}&entry.1670010429=${document.getElementById('ic').value}&entry.152757542=${document.getElementById('ep').value}&submit=Submit`;
+        async function transmitData() {
+            const vals = [document.getElementById('qs').value, document.getElementById('oi').value, document.getElementById('ic').value, document.getElementById('ep').value];
+            const personalAvg = Math.round(vals.reduce((a,b) => parseInt(a)+parseInt(b)) / 4);
+            
+            // 1. Save Locally
+            let history = JSON.parse(localStorage.getItem('stillflare_history') || "[]");
+            history.push(personalAvg);
+            localStorage.setItem('stillflare_history', JSON.stringify(history));
 
-            btn.disabled = true;
-            btn.innerText = "Transmitting...";
+            // 2. Transmit to Cloud
+            const formID = "1FAIpQLSeqartuUmgNYc5RWaREX2yX0aGJU8_hWgAw8GKZiLK2QoXFpQ";
+            const url = `https://docs.google.com/forms/d/e/${formID}/formResponse?entry.931849910=${vals[0]}&entry.1206314523=${vals[1]}&entry.1670010429=${vals[2]}&entry.152757542=${vals[3]}&submit=Submit`;
+
+            document.getElementById('statusMsg').innerText = "Transmitting to Global Cloud...";
             fetch(url, { mode: 'no-cors' }).then(() => {
-                msg.innerText = "Transmission successful.";
-                btn.innerText = "Transmission Complete";
-                setTimeout(() => { refreshPulse(); btn.disabled = false; btn.innerText = "Transmit Updates"; }, 2500);
+                document.getElementById('statusMsg').innerText = "Personal & Community sync complete.";
+                syncData();
             });
         }
-        window.onload = refreshPulse;
+
+        function exportPDF() {
+            const element = document.getElementById('capture-area');
+            const opt = { margin: 0.5, filename: 'Stillflare_Intelligence_Report.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
+            html2pdf().set(opt).from(element).save();
+        }
+
+        window.onload = () => { initChart(); syncData(); };
     </script>
 </body>
 </html>
