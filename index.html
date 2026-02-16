@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STILLFLARE // Dashboard v1.6</title>
+    <title>STILLFLARE // Dashboard v1.7</title>
     <style>
         :root {
             --brand-blue: #0061ff;
@@ -33,7 +33,6 @@
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
 
-        /* PULSE HEADER */
         .pulse-section {
             text-align: center;
             margin-bottom: 32px;
@@ -47,23 +46,10 @@
         .pulse-value { font-size: 54px; font-weight: 800; color: var(--brand-blue); line-height: 1; }
         .sample-size { font-size: 13px; color: var(--text-muted); margin-top: 8px; font-weight: 500; }
 
-        h1 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
-        .sub-header { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; }
+        h1 { font-size: 22px; font-weight: 700; margin-bottom: 8px; color: var(--text-main); }
+        .sub-header { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.5; }
 
-        /* PERSONA EXAMPLE SECTION */
-        .example-box {
-            background: #fffbe6; /* Subtle yellow for 'Note' feel */
-            border: 1px solid #ffe58f;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 25px;
-            font-size: 13px;
-            color: #856404;
-        }
-
-        .example-title { font-weight: 700; text-transform: uppercase; font-size: 11px; margin-bottom: 5px; display: block; }
-
-        /* LOGIC FRAMEWORK */
+        /* LOGIC FRAMEWORK WITH NOTE */
         .logic-framework {
             border: 1px solid var(--border-color);
             border-radius: 12px;
@@ -72,13 +58,22 @@
         }
 
         .logic-title { font-size: 12px; font-weight: 700; color: var(--brand-blue); text-transform: uppercase; margin-bottom: 15px; border-bottom: 1px solid #f0f0f0; padding-bottom: 5px; }
-        .def-item { margin-bottom: 12px; font-size: 13px; }
-        .def-item strong { color: var(--text-main); }
+        .def-item { margin-bottom: 12px; font-size: 13px; line-height: 1.4; }
+        .def-item strong { color: var(--text-main); font-weight: 600; }
         .scientific-label { font-size: 10px; color: var(--brand-blue); display: block; font-family: monospace; }
+
+        .persona-note {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-style: italic;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px dashed var(--border-color);
+        }
 
         /* SLIDERS */
         .slider-container { margin-bottom: 24px; }
-        .slider-header { display: flex; justify-content: space-between; font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+        .slider-header { display: flex; justify-content: space-between; font-size: 14px; font-weight: 600; color: var(--text-main); margin-bottom: 8px; }
 
         input[type="range"] {
             width: 100%; height: 6px; background: #dcdfe4; border-radius: 5px; appearance: none; outline: none;
@@ -102,23 +97,22 @@
         <div class="pulse-section">
             <div class="pulse-label">MAAS Community Pulse</div>
             <div id="livePulseVal" class="pulse-value">--%</div>
-            <div id="sampleCount" class="sample-size">Syncing telemetry...</div>
+            <div id="sampleCount" class="sample-size">Initializing telemetry...</div>
         </div>
 
         <h1>Stillflare Intelligence Engine</h1>
-        <p class="sub-header">Quantifying real-time operational sentiment.</p>
-
-        <div class="example-box">
-            <span class="example-title">Example Entry (Person A)</span>
-            "I feel very capable today (85% IC) and the system is stable (90% QS), but I'm confused about the recent team updates (30% OI) even though we are moving fast (95% EP)."
-        </div>
+        <p class="sub-header">Multi-Agent Analytics System quantifying real-time operational sentiment.</p>
 
         <div class="logic-framework">
-            <div class="logic-title">MAAS Definitions</div>
-            <div class="def-item"><span class="scientific-label">QS</span><strong>Quality of Service:</strong> System stability & reliability.</div>
-            <div class="def-item"><span class="scientific-label">OI</span><strong>Operational Intelligence:</strong> Clarity of info vs. noise.</div>
-            <div class="def-item"><span class="scientific-label">IC</span><strong>Internal Capability:</strong> Personal readiness & strength.</div>
-            <div class="def-item"><span class="scientific-label">EP</span><strong>Engine Power:</strong> Raw momentum & speed.</div>
+            <div class="logic-title">MAAS Logic Framework</div>
+            <div class="def-item"><span class="scientific-label">INDEX: QS</span><strong>Quality of Service:</strong> System stability and reliability.</div>
+            <div class="def-item"><span class="scientific-label">INDEX: OI</span><strong>Operational Intelligence:</strong> Clarity of information flow vs. environmental noise.</div>
+            <div class="def-item"><span class="scientific-label">INDEX: IC</span><strong>Internal Capability:</strong> Readiness and strength of available assets.</div>
+            <div class="def-item"><span class="scientific-label">INDEX: EP</span><strong>Engine Power:</strong> Raw velocity and drive of the ecosystem.</div>
+
+            <div class="persona-note">
+                * Note: If Person A feels the system is stable (90% QS) but team info is confusing (30% OI), they would adjust accordingly while keeping their high personal readiness (85% IC) and project speed (95% EP) in view.
+            </div>
         </div>
 
         <div class="slider-container">
@@ -139,7 +133,7 @@
         </div>
 
         <button id="submitBtn" onclick="submitToPulse()">Transmit Updates</button>
-        <div id="statusMsg">Ready for transmission.</div>
+        <div id="statusMsg">Ready for telemetry sync.</div>
     </div>
 
     <script>
@@ -160,8 +154,8 @@
                     if (c.length >= 5) totalScore += (parseInt(c[1]) + parseInt(c[2]) + parseInt(c[3]) + parseInt(c[4])) / 4;
                 });
                 document.getElementById('livePulseVal').innerText = (rows.length > 0 ? Math.round(totalScore / rows.length) : 0) + "%";
-                document.getElementById('sampleCount').innerText = `Calculated from ${rows.length} transmissions`;
-            } catch (e) { console.error("Offline"); }
+                document.getElementById('sampleCount').innerText = `Calculated from ${rows.length} unique transmissions`;
+            } catch (e) { console.error("Sync Error"); }
         }
 
         async function submitToPulse() {
@@ -174,7 +168,7 @@
             btn.innerText = "Transmitting...";
             fetch(url, { mode: 'no-cors' }).then(() => {
                 msg.innerText = "Transmission successful.";
-                btn.innerText = "Complete";
+                btn.innerText = "Transmission Complete";
                 setTimeout(() => { refreshPulse(); btn.disabled = false; btn.innerText = "Transmit Updates"; }, 2500);
             });
         }
