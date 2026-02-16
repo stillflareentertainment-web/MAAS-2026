@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STILLFLARE MAAS // v1.1</title>
+    <title>STILLFLARE MAAS // v1.2</title>
     <style>
         :root {
             --neon-blue: #00d4ff;
             --bg-dark: #0a0a0c;
             --panel-bg: #141417;
             --text-gray: #a0a0a5;
+            --accent-green: #39ff14;
         }
 
         body {
@@ -33,23 +34,35 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        h1 {
-            font-size: 1.2rem;
-            letter-spacing: 2px;
-            color: var(--neon-blue);
-            margin-bottom: 30px;
+        /* Community Pulse Header */
+        .pulse-box {
             text-align: center;
-            border-bottom: 1px solid #333;
-            padding-bottom: 15px;
+            margin-bottom: 25px;
+            padding: 15px;
+            border: 1px solid #333;
+            border-radius: 8px;
+            background: rgba(0, 212, 255, 0.05);
         }
 
-        .slider-group { margin-bottom: 25px; }
+        .pulse-label { font-size: 0.65rem; color: var(--text-gray); letter-spacing: 2px; margin-bottom: 5px; }
+        .pulse-value { font-size: 2rem; color: var(--neon-blue); font-weight: bold; font-family: monospace; }
+
+        h1 {
+            font-size: 1rem;
+            letter-spacing: 2px;
+            color: white;
+            margin-bottom: 25px;
+            text-align: center;
+            opacity: 0.8;
+        }
+
+        .slider-group { margin-bottom: 22px; }
 
         .label-row {
             display: flex;
             justify-content: space-between;
             margin-bottom: 8px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             text-transform: uppercase;
             color: var(--text-gray);
         }
@@ -71,7 +84,7 @@
             transition: 0.3s;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-top: 20px;
+            margin-top: 10px;
         }
 
         #submitBtn:hover {
@@ -83,15 +96,21 @@
         #statusMsg {
             margin-top: 20px;
             font-family: monospace;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--text-gray);
             text-align: center;
+            line-height: 1.4;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
+        <div class="pulse-box">
+            <div class="pulse-label">GLOBAL COMMUNITY PULSE</div>
+            <div id="livePulseVal" class="pulse-value">--%</div>
+        </div>
+
         <h1>STILLFLARE MAAS // ENGINE</h1>
 
         <div class="slider-group">
@@ -114,27 +133,55 @@
             <input type="range" id="ep" min="0" max="100" value="50" oninput="update('ep')">
         </div>
 
-        <button id="submitBtn" onclick="submitToPulse()">Transmit to Community Pulse</button>
-        <div id="statusMsg">>>> SYSTEM READY...</div>
+        <button id="submitBtn" onclick="submitToPulse()">Transmit to Pulse</button>
+        <div id="statusMsg">>>> SYSTEM ENCRYPTED<br>>>> READY FOR INGESTION</div>
     </div>
 
     <script>
-        // Update the percentage labels next to sliders
+        const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRRO9rzX0DOaCBEppRFcRXtsIxxgK6fT6KIxAjFhq44PaoBEAtEy8fwjTEFNc9QZofF2P9srq0eYT4c/pub?gid=718698897&single=true&output=csv";
+
         function update(id) {
             document.getElementById(id + 'Val').innerText = document.getElementById(id).value + '%';
+        }
+
+        // FETCH AND CALCULATE THE GLOBAL AVERAGE
+        async function refreshPulse() {
+            try {
+                const response = await fetch(CSV_URL);
+                const data = await response.text();
+                const rows = data.split('\n').slice(1); // Remove header
+                
+                let totalScore = 0;
+                let entryCount = 0;
+
+                rows.forEach(row => {
+                    const cols = row.split(',');
+                    if (cols.length >= 5) {
+                        // Sum up QS, OI, IC, EP and get their average
+                        const rowAvg = (parseInt(cols[1]) + parseInt(cols[2]) + parseInt(cols[3]) + parseInt(cols[4])) / 4;
+                        if (!isNaN(rowAvg)) {
+                            totalScore += rowAvg;
+                            entryCount++;
+                        }
+                    }
+                });
+
+                const finalPulse = entryCount > 0 ? Math.round(totalScore / entryCount) : 0;
+                document.getElementById('livePulseVal').innerText = finalPulse + "%";
+            } catch (e) {
+                console.error("Pulse Sync Error");
+            }
         }
 
         async function submitToPulse() {
             const btn = document.getElementById('submitBtn');
             const msg = document.getElementById('statusMsg');
             
-            // 1. Capture slider values
             const qs = document.getElementById('qs').value;
             const oi = document.getElementById('oi').value;
             const ic = document.getElementById('ic').value;
             const ep = document.getElementById('ep').value;
 
-            // 2. YOUR GOOGLE FORM CONFIGURATION (AUTO-MAPPED)
             const formID = "1FAIpQLSeqartuUmgNYc5RWaREX2yX0aGJU8_hWgAw8GKZiLK2QoXFpQ";
             const entryQS = "entry.931849910";
             const entryOI = "entry.1206314523";
@@ -144,25 +191,30 @@
             const baseURL = `https://docs.google.com/forms/d/e/${formID}/formResponse?`;
             const submitURL = `${baseURL}${entryQS}=${qs}&${entryOI}=${oi}&${entryIC}=${ic}&${entryEP}=${ep}&submit=Submit`;
 
-            // 3. The Transmission Logic
             btn.disabled = true;
             btn.innerText = "TRANSMITTING...";
-            msg.innerText = ">>> INITIATING CLOUD HANDSHAKE...";
 
-            // Send data to Google via 'no-cors' stealth mode
             fetch(submitURL, { mode: 'no-cors' })
                 .then(() => {
                     msg.style.color = "#00d4ff"; 
-                    msg.innerText = ">>> TRANSMISSION SUCCESSFUL: DATA INGESTED.";
-                    btn.innerText = "TRANSMISSION COMPLETE";
+                    msg.innerText = ">>> TRANSMISSION SUCCESSFUL\n>>> CLOUD SYNCING...";
+                    btn.innerText = "SENT";
+                    // WAIT 2 SECONDS THEN REFRESH PULSE
+                    setTimeout(() => {
+                        refreshPulse();
+                        btn.disabled = false;
+                        btn.innerText = "Transmit to Pulse";
+                    }, 2000);
                 })
                 .catch(() => {
                     msg.style.color = "#ff4d4d"; 
-                    msg.innerText = ">>> ERROR: CLOUD HANDSHAKE FAILED.";
+                    msg.innerText = ">>> ERROR: HANDSHAKE FAILED";
                     btn.disabled = false;
-                    btn.innerText = "RETRY TRANSMISSION";
                 });
         }
+
+        // Run once on load
+        window.onload = refreshPulse;
     </script>
 </body>
 </html>
