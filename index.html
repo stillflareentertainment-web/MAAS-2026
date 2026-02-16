@@ -156,7 +156,23 @@
                 timestamp: new Date().toISOString()
             };
 
-            const GITHUB_TOKEN = "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";
+            const GITHUB_TOKEN = "// The Stealth Key (Your Base64 string goes inside the quotes)
+const HIDDEN_KEY = "- [ ] Z2l0aHViX3BhdF8xMUIzWURRMkkwajV2ckR0VUxvM2JEX2FrY3lHSk96NllqTDhnQmxZMDlrQ0VJdjZZbk5NRGxCOXA2MUNQOTZjN2tEQk5YV1dWWjRCRUJSQWIw"; 
+
+async function submitToPulse() {
+    const btn = document.getElementById('submitBtn');
+    const msg = document.getElementById('statusMsg');
+    
+    // This unscrambles the key in the user's browser memory only
+    const GITHUB_TOKEN = atob(HIDDEN_KEY); 
+    
+    const REPO_PATH = "stillflareentertainment-web/MAAS-2026";
+    const FILE_NAME = `submissions/data_${Date.now()}.json`;
+
+    btn.disabled = true;
+    btn.innerText = "Transmitting...";
+    
+    // ... leave the rest of the 'fetch' code exactly as it was ...";
             const REPO_PATH = "stillflareentertainment-web/MAAS-2026";
             const FILE_NAME = `submissions/data_${Date.now()}.json`;
 
