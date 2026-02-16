@@ -1,0 +1,28 @@
+name: MAAS Daily OS Upgrade
+on:
+  schedule:
+    - cron: '0 0 * * *' # This triggers the "Brain" every night at midnight
+  workflow_dispatch: # This adds a button so YOU can trigger the math manually
+
+jobs:
+  upgrade_model:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Run Aggregator Math
+        run: python scripts/aggregator.py
+
+      - name: Commit and Push Results
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add community_pulse.json
+          git commit -m "Daily OS Upgrade: Community Pulse Updated" || echo "No changes to commit"
+          git push
