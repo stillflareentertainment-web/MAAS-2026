@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STILLFLARE // Dashboard v1.4</title>
+    <title>STILLFLARE // Dashboard v1.5</title>
     <style>
         :root {
             --brand-blue: #0061ff;
@@ -27,60 +27,46 @@
         .dashboard-card {
             background: var(--card-bg);
             width: 100%;
-            max-width: 480px;
+            max-width: 520px;
             padding: 40px;
-            border-radius: 16px;
+            border-radius: 20px;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
 
+        /* HEADER PULSE SECTION */
         .pulse-section {
             text-align: center;
             margin-bottom: 32px;
-            padding-bottom: 24px;
-            border-bottom: 1px solid var(--border-color);
+            padding: 24px;
+            background: #f8fbff;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
         }
 
-        .pulse-label {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--text-muted);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            margin-bottom: 8px;
+        .pulse-label { font-size: 11px; font-weight: 700; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+        .pulse-value { font-size: 54px; font-weight: 800; color: var(--brand-blue); line-height: 1; }
+        .sample-size { font-size: 13px; color: var(--text-muted); margin-top: 8px; font-weight: 500; }
+
+        h1 { font-size: 22px; font-weight: 700; margin-bottom: 8px; color: var(--text-main); }
+        .sub-header { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.5; }
+
+        /* SCIENTIFIC DEFINITIONS SECTION */
+        .logic-framework {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
         }
 
-        .pulse-value {
-            font-size: 54px;
-            font-weight: 800;
-            color: var(--brand-blue);
-            line-height: 1;
-        }
-
-        .sample-size {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-top: 8px;
-            font-weight: 500;
-        }
-
-        h1 { font-size: 20px; font-weight: 700; margin: 0 0 12px 0; }
+        .logic-title { font-size: 12px; font-weight: 700; color: var(--brand-blue); text-transform: uppercase; margin-bottom: 15px; border-bottom: 1px solid #f0f0f0; padding-bottom: 5px; }
         
-        .intro-text {
-            font-size: 14px;
-            color: var(--text-muted);
-            line-height: 1.6;
-            margin-bottom: 30px;
-        }
+        .def-item { margin-bottom: 12px; font-size: 13px; line-height: 1.4; }
+        .def-item strong { color: var(--text-main); font-weight: 600; }
+        .scientific-label { font-size: 10px; color: var(--brand-blue); display: block; font-family: monospace; }
 
-        .instruction-box {
-            background: #f1f4f9;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-            font-size: 13px;
-        }
-
-        .slider-container { margin-bottom: 22px; }
+        /* SLIDER UI */
+        .slider-container { margin-bottom: 24px; }
         .slider-header { display: flex; justify-content: space-between; font-size: 14px; font-weight: 600; color: var(--text-main); margin-bottom: 8px; }
 
         input[type="range"] {
@@ -88,14 +74,14 @@
         }
 
         input[type="range"]::-webkit-slider-thumb {
-            appearance: none; width: 20px; height: 20px; background: var(--brand-blue); border-radius: 50%; cursor: pointer; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            appearance: none; width: 22px; height: 22px; background: var(--brand-blue); border-radius: 50%; cursor: pointer; border: 4px solid white; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         #submitBtn {
-            width: 100%; padding: 16px; background-color: var(--brand-blue); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.2s;
+            width: 100%; padding: 18px; background-color: var(--brand-blue); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.2s;
         }
 
-        #submitBtn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 97, 255, 0.3); }
+        #submitBtn:hover { transform: translateY(-1px); box-shadow: 0 10px 15px -3px rgba(0, 97, 255, 0.4); }
         #statusMsg { margin-top: 16px; font-size: 13px; color: var(--text-muted); text-align: center; font-style: italic; }
     </style>
 </head>
@@ -103,21 +89,38 @@
 
     <div class="dashboard-card">
         <div class="pulse-section">
-            <div class="pulse-label">Current Community Pulse</div>
+            <div class="pulse-label">MAAS Community Pulse</div>
             <div id="livePulseVal" class="pulse-value">--%</div>
-            <div id="sampleCount" class="sample-size">Syncing live data...</div>
+            <div id="sampleCount" class="sample-size">Initializing data stream...</div>
         </div>
 
         <h1>Stillflare Intelligence Engine</h1>
-        <p class="intro-text">
-            Welcome to the MAAS (Multi-Agent Analytics System). This portal captures real-time biometric and operational sentiment to generate a unified "Pulse" of the Stillflare community.
+        <p class="sub-header">
+            Multi-Agent Analytics System (MAAS) quantifying community sentiment through four core biological data streams.
         </p>
 
-        <div class="instruction-box">
-            <strong>How to participate:</strong><br>
-            1. Adjust the sliders to reflect your current status.<br>
-            2. Click "Transmit Updates" to sync with the cloud.<br>
-            3. Watch the Pulse Average at the top; it updates live as new transmissions arrive from across the network.
+        <div class="logic-framework">
+            <div class="logic-title">MAAS Logic Framework</div>
+            
+            <div class="def-item">
+                <span class="scientific-label">INDEX: OPERATIONAL RELIABILITY</span>
+                <strong>Quality of Service (QS):</strong> Measures foundational stability. High QS indicates a smooth, error-free operational environment.
+            </div>
+
+            <div class="def-item">
+                <span class="scientific-label">INDEX: COGNITIVE THROUGHPUT</span>
+                <strong>Operational Intelligence (OI):</strong> Measures the clarity of information flow vs. environmental noise.
+            </div>
+
+            <div class="def-item">
+                <span class="scientific-label">INDEX: RESOURCE ELASTICITY</span>
+                <strong>Internal Capability (IC):</strong> Measures the readiness and potential of available community assets.
+            </div>
+
+            <div class="def-item">
+                <span class="scientific-label">INDEX: KINETIC MOMENTUM</span>
+                <strong>Engine Power (EP):</strong> Measures the raw velocity and drive of the Stillflare ecosystem.
+            </div>
         </div>
 
         <div class="slider-container">
@@ -138,7 +141,7 @@
         </div>
 
         <button id="submitBtn" onclick="submitToPulse()">Transmit Updates</button>
-        <div id="statusMsg">System ready for encrypted transmission.</div>
+        <div id="statusMsg">System ready for encrypted telemetry sync.</div>
     </div>
 
     <script>
@@ -150,7 +153,8 @@
 
         async function refreshPulse() {
             try {
-                const response = await fetch(CSV_URL + "&cache_bust=" + Date.now());
+                // Cache-busting ensures the browser pulls the absolute newest data from the sheet
+                const response = await fetch(CSV_URL + "&cb=" + Date.now());
                 const data = await response.text();
                 const rows = data.split('\n').filter(row => row.trim() !== "").slice(1);
                 
@@ -167,8 +171,8 @@
 
                 const finalPulse = entryCount > 0 ? Math.round(totalScore / entryCount) : 0;
                 document.getElementById('livePulseVal').innerText = finalPulse + "%";
-                document.getElementById('sampleCount').innerText = `Based on ${entryCount} live transmissions`;
-            } catch (e) { console.error("Sync Error"); }
+                document.getElementById('sampleCount').innerText = `Calculated from ${entryCount} unique transmissions`;
+            } catch (e) { console.error("Pulse Sync Offline"); }
         }
 
         async function submitToPulse() {
@@ -179,12 +183,13 @@
             const submitURL = `https://docs.google.com/forms/d/e/${formID}/formResponse?entry.931849910=${document.getElementById('qs').value}&entry.1206314523=${document.getElementById('oi').value}&entry.1670010429=${document.getElementById('ic').value}&entry.152757542=${document.getElementById('ep').value}&submit=Submit`;
 
             btn.disabled = true;
-            btn.innerText = "Transmitting...";
+            btn.innerText = "Transmitting Telemetry...";
 
             fetch(submitURL, { mode: 'no-cors' }).then(() => {
-                msg.innerText = "Data successfully ingested into community pool.";
+                msg.innerText = "Transmission successful. Handshake complete.";
                 btn.innerText = "Transmission Complete";
-                setTimeout(() => { refreshPulse(); btn.disabled = false; btn.innerText = "Transmit Updates"; }, 2000);
+                // Wait for Google to process the row before refreshing
+                setTimeout(() => { refreshPulse(); btn.disabled = false; btn.innerText = "Transmit Updates"; }, 2500);
             });
         }
         window.onload = refreshPulse;
