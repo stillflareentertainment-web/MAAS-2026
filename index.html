@@ -3,112 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STILLFLARE // Intelligence Suite v2.6</title>
+    <title>STILLFLARE // HR Terminal v2.7</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        :root {
-            --brand-blue: #0061ff;
-            --bg-light: #f4f7f9;
-            --card-bg: #ffffff;
-            --text-main: #1a1f36;
-            --border-color: #d1d9e0;
-        }
-
-        body { background-color: var(--bg-light); color: var(--text-main); font-family: "Courier New", Courier, monospace; display: flex; justify-content: center; padding: 20px; margin: 0; }
+        :root { --brand-blue: #000; --bg-light: #eef1f4; --text-main: #000; }
+        body { background: var(--bg-light); color: #000; font-family: "Courier New", Courier, monospace; display: flex; justify-content: center; padding: 20px; }
         
-        .dashboard-card { background: var(--card-bg); width: 100%; max-width: 700px; padding: 30px; border: 2px solid #000; position: relative; }
+        .dashboard-card { background: #fff; width: 100%; max-width: 750px; padding: 30px; border: 3px solid #000; position: relative; box-shadow: 10px 10px 0px #000; }
 
-        /* BANNER AREA */
-        .banner-container { width: 100%; margin-bottom: 20px; border-bottom: 3px double #000; padding-bottom: 10px; }
-        .banner-container img { width: 100%; height: auto; display: block; }
+        /* BANNER */
+        .banner-container { width: 100%; margin-bottom: 15px; border-bottom: 2px solid #000; }
+        .banner-container img { width: 100%; height: auto; }
 
-        /* PDF OVERLAY */
+        /* OVERLAY */
         #pdfOverlay {
-            display: none;
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.98);
-            z-index: 100;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #fff; z-index: 100; flex-direction: column; align-items: center; justify-content: center;
         }
+        .loader-bar { width: 70%; height: 20px; border: 2px solid #000; margin-top: 10px; position: relative; }
+        .loader-fill { height: 100%; background: #000; width: 0%; transition: width 0.5s; }
 
-        .loader-bar-bg { width: 60%; height: 10px; background: #000; border: 1px solid #000; margin-top: 15px; }
-        .loader-bar-fill { width: 0%; height: 100%; background: #fff; border-right: 2px solid #000; transition: width 0.4s ease; }
+        /* STATS */
+        .pulse-box { display: flex; border: 2px solid #000; margin-bottom: 20px; }
+        .stat { flex: 1; padding: 15px; border-right: 2px solid #000; text-align: center; }
+        .stat:last-child { border-right: none; }
+        .val { font-size: 28px; font-weight: bold; }
+        .lab { font-size: 10px; text-decoration: underline; }
 
-        /* DATA GRID */
-        .pulse-grid { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid #000; margin-bottom: 20px; }
-        .pulse-stat { padding: 15px; border: 1px solid #000; text-align: center; }
-        .stat-val { font-size: 32px; font-weight: bold; }
-        .stat-label { font-size: 12px; text-transform: uppercase; font-weight: bold; }
+        /* CHART */
+        .chart-wrap { height: 250px; border: 2px solid #000; padding: 10px; margin-bottom: 20px; background: #fff; }
 
-        .chart-container { height: 250px; margin-bottom: 20px; border: 1px solid #000; padding: 10px; }
+        /* HR REPORT TEXT AREA */
+        .hr-report { font-size: 13px; line-height: 1.2; border-top: 2px dashed #000; padding-top: 15px; }
+        .row { display: flex; justify-content: space-between; margin-bottom: 8px; }
 
-        /* HR REPORT STYLE LOGS */
-        .report-section { border-top: 2px solid #000; padding-top: 15px; margin-top: 20px; }
-        .report-item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #ccc; font-size: 14px; }
-
-        /* CONTROLS */
-        .slider-container { margin-bottom: 15px; }
-        input[type="range"] { width: 100%; cursor: pointer; }
-        
-        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
-        button { padding: 15px; font-family: "Courier New", Courier, monospace; font-weight: bold; cursor: pointer; border: 2px solid #000; background: #fff; }
+        /* BUTTONS */
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        button { padding: 15px; font-family: "Courier New"; font-weight: bold; border: 2px solid #000; background: #fff; cursor: pointer; text-transform: uppercase; }
         button:hover { background: #000; color: #fff; }
-        
-        #statusMsg { margin-top: 15px; font-size: 12px; text-align: center; font-weight: bold; }
+
+        input[type="range"] { width: 100%; margin: 10px 0; accent-color: #000; }
+        #statusMsg { font-size: 11px; text-align: center; margin-top: 10px; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div class="dashboard-card" id="capture-area">
         <div id="pdfOverlay">
-            <h2>GENERATING HR ARCHIVE</h2>
-            <p id="loaderText">Compiling dot-matrix report...</p>
-            <div class="loader-bar-bg"><div id="loaderFill" class="loader-bar-fill"></div></div>
+            <h2 id="overlayTitle">INITIATING HR ARCHIVE...</h2>
+            <div class="loader-bar"><div id="loaderFill" class="loader-fill"></div></div>
+            <p id="loaderText" style="font-size: 12px; margin-top: 10px;">MOUNTING VIRTUAL DRIVE...</p>
         </div>
 
         <div class="banner-container">
-            <img src="https://raw.githubusercontent.com/stillflareentertainment-web/stillflare-lab/main/STILLFLARE%20BANNER.png" alt="STILLFLARE LABS">
+            <img src="https://raw.githubusercontent.com/stillflareentertainment-web/stillflare-lab/main/STILLFLARE%20BANNER.png" alt="STILLFLARE">
         </div>
 
-        <div class="pulse-grid">
-            <div class="pulse-stat">
-                <div class="stat-label">GLOBAL_PULSE</div>
-                <div id="globalPulse" class="stat-val">--%</div>
-            </div>
-            <div class="pulse-stat">
-                <div class="stat-label">LOCAL_IDENTITY</div>
-                <div id="personalPulse" class="stat-val">--%</div>
-            </div>
+        <div class="pulse-box">
+            <div class="stat"><div class="lab">GLOBAL_AVG</div><div id="globalPulse" class="val">--%</div></div>
+            <div class="stat"><div class="lab">LOCAL_AVG</div><div id="personalPulse" class="val">--%</div></div>
+            <div class="stat"><div class="lab">TREND_VECTOR</div><div id="trendVal" class="val">--</div></div>
         </div>
 
-        <div class="chart-container"><canvas id="mainChart"></canvas></div>
+        <div class="chart-wrap"><canvas id="mainChart"></canvas></div>
 
-        <div class="report-section">
-            <div class="report-item"><span>[QS] QUALITY_OF_SERVICE</span><span id="qsVal">50%</span></div>
-            <div class="slider-container"><input type="range" id="qs" min="0" max="100" value="50" oninput="updateVal('qs')"></div>
+        <div class="hr-report">
+            <div style="font-weight: bold; margin-bottom: 10px;">[ OPERATIONAL TELEMETRY LOG ]</div>
+            <div class="row"><span>QUAL_OF_SERVICE (QS):</span><span id="qsVal">50%</span></div>
+            <input type="range" id="qs" min="0" max="100" value="50" oninput="updateVal('qs')">
             
-            <div class="report-item"><span>[OI] OPERATIONAL_INTEL</span><span id="oiVal">50%</span></div>
-            <div class="slider-container"><input type="range" id="oi" min="0" max="100" value="50" oninput="updateVal('oi')"></div>
+            <div class="row"><span>OPER_INTEL (OI):</span><span id="oiVal">50%</span></div>
+            <input type="range" id="oi" min="0" max="100" value="50" oninput="updateVal('oi')">
             
-            <div class="report-item"><span>[IC] INTERNAL_CAPABILITY</span><span id="icVal">50%</span></div>
-            <div class="slider-container"><input type="range" id="ic" min="0" max="100" value="50" oninput="updateVal('ic')"></div>
+            <div class="row"><span>INTER_CAPACITY (IC):</span><span id="icVal">50%</span></div>
+            <input type="range" id="ic" min="0" max="100" value="50" oninput="updateVal('ic')">
             
-            <div class="report-item"><span>[EP] ENGINE_POWER</span><span id="epVal">50%</span></div>
-            <div class="slider-container"><input type="range" id="ep" min="0" max="100" value="50" oninput="updateVal('ep')"></div>
+            <div class="row"><span>ENGINE_POWER (EP):</span><span id="epVal">50%</span></div>
+            <input type="range" id="ep" min="0" max="100" value="50" oninput="updateVal('ep')">
         </div>
 
-        <div class="btn-group">
-            <button onclick="transmitData()">[ COMMIT_DATA ]</button>
-            <button onclick="exportPDF()">[ EXPORT_REPORT ]</button>
+        <div class="controls">
+            <button onclick="transmitData()">[ COMMIT_SYNC ]</button>
+            <button onclick="exportPDF()">[ PRINT_REPORT ]</button>
         </div>
         
-        <div id="statusMsg">TERMINAL READY // SYSTEM_OK</div>
-        <div id="dateStamp" style="font-size: 10px; text-align: right; margin-top: 10px;"></div>
+        <div id="statusMsg">STILLFLARE_OS: READY</div>
+        <div id="dateStamp" style="font-size: 9px; margin-top: 15px; border-top: 1px solid #000; padding-top: 5px;"></div>
     </div>
 
     <script>
@@ -128,7 +109,7 @@
                         { label: 'LOCAL', borderColor: '#000', borderDash: [5, 5], data: [], tension: 0, borderWidth: 2, pointRadius: 0 }
                     ]
                 },
-                options: { responsive: true, maintainAspectRatio: false, animation: false, plugins: { legend: { labels: { font: { family: 'Courier New' } } } } }
+                options: { responsive: true, maintainAspectRatio: false, animation: false, scales: { y: { beginAtZero: true, max: 100 } } }
             });
         }
 
@@ -145,27 +126,38 @@
                         commData.push(avg); total += avg;
                     }
                 });
-                document.getElementById('globalPulse').innerText = (rows.length > 0 ? Math.round(total / rows.length) : 0) + "%";
-                const persData = JSON.parse(localStorage.getItem('stillflare_history') || "[]");
-                if (persData.length > 0) document.getElementById('personalPulse').innerText = persData[persData.length - 1] + "%";
-                mainChart.data.labels = Array.from({length: Math.max(rows.length, persData.length)}, (_, i) => i + 1);
+                const gAvg = (rows.length > 0 ? Math.round(total / rows.length) : 0);
+                document.getElementById('globalPulse').innerText = gAvg + "%";
+                
+                const pData = JSON.parse(localStorage.getItem('stillflare_history') || "[]");
+                if (pData.length > 0) {
+                    const lAvg = pData[pData.length - 1];
+                    document.getElementById('personalPulse').innerText = lAvg + "%";
+                    // Trend logic
+                    if(pData.length >= 2) {
+                        const diff = lAvg - pData[pData.length - 2];
+                        document.getElementById('trendVal').innerText = diff >= 0 ? "ASCEND" : "DESCEND";
+                    }
+                }
+                
+                mainChart.data.labels = Array.from({length: Math.max(rows.length, pData.length)}, (_, i) => i + 1);
                 mainChart.data.datasets[0].data = commData;
-                mainChart.data.datasets[1].data = persData;
+                mainChart.data.datasets[1].data = pData;
                 mainChart.update();
-                document.getElementById('dateStamp').innerText = "REPORT_TS: " + new Date().toISOString();
+                document.getElementById('dateStamp').innerText = "SYSTEM_TIME: " + new Date().toLocaleString();
             } catch (e) { console.error(e); }
         }
 
         async function transmitData() {
-            const vals = [document.getElementById('qs').value, document.getElementById('oi').value, document.getElementById('ic').value, document.getElementById('ep').value];
-            const avg = Math.round(vals.reduce((a,b) => parseInt(a)+parseInt(b)) / 4);
+            const v = [document.getElementById('qs').value, document.getElementById('oi').value, document.getElementById('ic').value, document.getElementById('ep').value];
+            const avg = Math.round(v.reduce((a,b) => parseInt(a)+parseInt(b)) / 4);
             let h = JSON.parse(localStorage.getItem('stillflare_history') || "[]");
             h.push(avg); localStorage.setItem('stillflare_history', JSON.stringify(h));
-            const formID = "1FAIpQLSeqartuUmgNYc5RWaREX2yX0aGJU8_hWgAw8GKZiLK2QoXFpQ";
-            const url = `https://docs.google.com/forms/d/e/${formID}/formResponse?entry.931849910=${vals[0]}&entry.1206314523=${vals[1]}&entry.1670010429=${vals[2]}&entry.152757542=${vals[3]}&submit=Submit`;
-            document.getElementById('statusMsg').innerText = "TRANSMITTING TO CORE...";
+            const fID = "1FAIpQLSeqartuUmgNYc5RWaREX2yX0aGJU8_hWgAw8GKZiLK2QoXFpQ";
+            const url = `https://docs.google.com/forms/d/e/${fID}/formResponse?entry.931849910=${v[0]}&entry.1206314523=${v[1]}&entry.1670010429=${v[2]}&entry.152757542=${v[3]}&submit=Submit`;
+            document.getElementById('statusMsg').innerText = "PUSHING TELEMETRY...";
             fetch(url, { mode: 'no-cors' }).then(() => {
-                document.getElementById('statusMsg').innerText = "TRANSMISSION COMPLETE.";
+                document.getElementById('statusMsg').innerText = "SYNC SUCCESS.";
                 syncData();
             });
         }
@@ -175,31 +167,36 @@
             const fill = document.getElementById('loaderFill');
             const text = document.getElementById('loaderText');
             overlay.style.display = 'flex';
-            fill.style.width = '10%';
+            
+            // Progress sequencing
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 5;
+                fill.style.width = progress + "%";
+                if(progress === 20) text.innerText = "BUFFERING ASSETS...";
+                if(progress === 50) text.innerText = "CALCULATING VECTORS...";
+                if(progress === 80) text.innerText = "CAPTURING HR LOG...";
+                if(progress >= 100) clearInterval(interval);
+            }, 300);
 
-            const element = document.getElementById('capture-area');
             const opt = { 
                 margin: 0.1, 
-                filename: 'MAAS_HR_REPORT.pdf', 
-                html2canvas: { scale: 1.5, useCORS: true, onclone: (clonedDoc) => { clonedDoc.getElementById('pdfOverlay').style.display = 'none'; } }, 
+                filename: 'SF_HR_ARCHIVE.pdf', 
+                html2canvas: { scale: 1.5, useCORS: true, onclone: (cloned) => {
+                    cloned.getElementById('pdfOverlay').style.display = 'none';
+                    // Hide the interactive buttons in the PDF
+                    cloned.querySelector('.controls').style.display = 'none';
+                }}, 
                 jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } 
             };
 
+            // THE 6-SECOND HOLD
             setTimeout(() => {
-                fill.style.width = '50%';
-                text.innerText = "STABILIZING SENSORS...";
-                const worker = html2pdf().set(opt).from(element).toPdf();
-
-                setTimeout(() => {
-                    fill.style.width = '90%';
-                    text.innerText = "FINALIZING ARCHIVE...";
-                    worker.save().then(() => {
-                        fill.style.width = '100%';
-                        setTimeout(() => { overlay.style.display = 'none'; }, 1000);
-                    });
-                }, 4000); // 4 SECOND DELAY FOR STABILITY
-
-            }, 500);
+                html2pdf().set(opt).from(document.getElementById('capture-area')).save().then(() => {
+                    overlay.style.display = 'none';
+                    fill.style.width = '0%';
+                });
+            }, 6000);
         }
 
         window.onload = () => { initChart(); syncData(); };
