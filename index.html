@@ -1,38 +1,59 @@
-import json
-import os
-import glob
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STILLFLARE LAB | MAAS 2026</title>
+    <style>
+        body { background-color: #1a1a2e; color: #e9e9e9; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .lab-container { border: 1px solid #4d4d7a; padding: 30px; border-radius: 10px; background: #16213e; box-shadow: 0 0 20px rgba(0,0,0,0.5); width: 90%; max-width: 600px; }
+        h1 { color: #00d4ff; border-bottom: 2px solid #00d4ff; padding-bottom: 10px; }
+        .slider-group { margin: 20px 0; width: 100%; }
+        input[type=range] { width: 100%; cursor: pointer; }
+        .output-box { margin-top: 30px; padding: 20px; border: 1px dashed #00d4ff; text-align: center; font-size: 1.2rem; }
+        .btn-run { background: #00d4ff; color: #1a1a2e; border: none; padding: 15px 30px; font-weight: bold; cursor: pointer; border-radius: 5px; margin-top: 10px; }
+        .btn-run:hover { background: #fff; }
+    </style>
+</head>
+<body>
+    <div class="lab-container">
+        <h1>STILLFLARE LAB // ALPHA 0.4.2</h1>
+        <p>Model As A Service (MAAS) 2026 Pilot</p>
+        <hr>
+        
+        <div class="slider-group">
+            <label>Quality of System (QS): <span id="qsVal">50</span></label>
+            <input type="range" id="qs" min="0" max="100" value="50" oninput="updateVal('qs')">
+        </div>
+        <div class="slider-group">
+            <label>External Pressure (EP): <span id="epVal">50</span></label>
+            <input type="range" id="ep" min="0" max="100" value="50" oninput="updateVal('ep')">
+        </div>
+        
+        <button class="btn-run" onclick="calculateMAAS()">RUN ANALYSIS</button>
 
-def calculate_daily_pulse():
-    # 1. Collect all anonymous submissions from the /submissions folder
-    submission_files = glob.glob("submissions/*.json")
-    
-    if not submission_files:
-        return # No new data to process
-    
-    total_metrics = {'qs': 0, 'oi': 0, 'ic': 0, 'di': 0, 'ep': 0}
-    count = len(submission_files)
+        <div class="output-box">
+            Performance Output: <span id="result">--</span><br>
+            Variance Coefficient: <span id="variance">--</span>
+        </div>
+    </div>
 
-    for file in submission_files:
-        with open(file, 'r') as f:
-            data = json.load(f)
-            for key in total_metrics:
-                total_metrics[key] += data.get(key, 50)
+    <script>
+        function updateVal(id) {
+            document.getElementById(id + 'Val').innerText = document.getElementById(id).value;
+        }
 
-    # 2. Calculate the "Community Mean"
-    avg_metrics = {k: v / count for k, v in total_metrics.items()}
-    
-    # 3. Update the Keeper Model file
-    with open("community_pulse.json", "w") as f:
-        json.dump({
-            "last_update": "2026-02-16",
-            "averages": avg_metrics,
-            "sample_size": count,
-            "status": "OS_UPGRADED"
-        }, f)
+        function calculateMAAS() {
+            let qs = parseInt(document.getElementById('qs').value);
+            let ep = parseInt(document.getElementById('ep').value);
+            
+            // Core Math Logic
+            let performance = (qs * 0.7) - (ep * 0.3);
+            let variance = ep - qs;
 
-    # 4. Clear the folder for the next day's cycle
-    for file in submission_files:
-        os.remove(file)
-
-if __name__ == "__main__":
-    calculate_daily_pulse() 
+            document.getElementById('result').innerText = performance.toFixed(2);
+            document.getElementById('variance').innerText = (variance > 0 ? "+" : "") + variance;
+        }
+    </script>
+</body>
+</html>
