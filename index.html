@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STILLFLARE // Intelligence Suite v2.2</title>
+    <title>STILLFLARE // Intelligence Suite v2.3</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
@@ -21,17 +21,18 @@
         
         .dashboard-card { background: var(--card-bg); width: 100%; max-width: 650px; padding: 40px; border-radius: 20px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); position: relative; }
 
-        /* LOADING OVERLAY */
+        /* LOADING OVERLAY - Now with Stealth Capture compatibility */
         #pdfOverlay {
             display: none;
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             z-index: 100;
             border-radius: 20px;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            text-align: center;
         }
 
         .loader-bar-bg { width: 60%; height: 8px; background: #eee; border-radius: 10px; overflow: hidden; margin-top: 15px; }
@@ -64,16 +65,17 @@
 
     <div class="dashboard-card" id="capture-area">
         <div id="pdfOverlay">
-            <h2 style="color: var(--brand-blue); margin: 0;">Generating Intelligence Report</h2>
-            <p id="loaderText" style="font-size: 13px; color: var(--text-muted);">Capturing data visualizations...</p>
+            <h2 style="color: var(--brand-blue); margin: 0;">Intelligence Report Generation</h2>
+            <p id="loaderText" style="font-size: 13px; color: var(--text-muted);">Executing stealth capture logic...</p>
             <div class="loader-bar-bg"><div id="loaderFill" class="loader-bar-fill"></div></div>
         </div>
 
         <div class="header-flex">
             <div>
                 <h1>Stillflare Intelligence Suite</h1>
-                <div class="stat-label">MAAS // SECURE TERMINAL v2.2</div>
+                <div class="stat-label">MAAS // SECURE TERMINAL v2.3</div>
             </div>
+            <div id="dateStamp" style="font-size: 10px; color: var(--text-muted);"></div>
         </div>
 
         <div class="pulse-grid">
@@ -91,26 +93,26 @@
 
         <div class="logic-framework">
             <div class="slider-container">
-                <div class="slider-header"><span>Quality of Service</span><span id="qsVal">50%</span></div>
+                <div class="slider-header"><span>Quality of Service (QS)</span><span id="qsVal">50%</span></div>
                 <input type="range" id="qs" min="0" max="100" value="50" oninput="updateVal('qs')">
             </div>
             <div class="slider-container">
-                <div class="slider-header"><span>Operational Intelligence</span><span id="oiVal">50%</span></div>
+                <div class="slider-header"><span>Operational Intelligence (OI)</span><span id="oiVal">50%</span></div>
                 <input type="range" id="oi" min="0" max="100" value="50" oninput="updateVal('oi')">
             </div>
             <div class="slider-container">
-                <div class="slider-header"><span>Internal Capability</span><span id="icVal">50%</span></div>
+                <div class="slider-header"><span>Internal Capability (IC)</span><span id="icVal">50%</span></div>
                 <input type="range" id="ic" min="0" max="100" value="50" oninput="updateVal('ic')">
             </div>
             <div class="slider-container">
-                <div class="slider-header"><span>Engine Power</span><span id="epVal">50%</span></div>
+                <div class="slider-header"><span>Engine Power (EP)</span><span id="epVal">50%</span></div>
                 <input type="range" id="ep" min="0" max="100" value="50" oninput="updateVal('ep')">
             </div>
         </div>
 
         <div class="btn-group">
             <button class="btn-primary" onclick="transmitData()">Transmit & Save</button>
-            <button class="btn-secondary" onclick="exportPDF()">Export Intelligence PDF</button>
+            <button class="btn-secondary" onclick="exportPDF()">Export Clean PDF</button>
         </div>
         <div id="statusMsg">Ready for telemetry ingestion.</div>
     </div>
@@ -160,6 +162,9 @@
                 mainChart.data.datasets[0].data = commData;
                 mainChart.data.datasets[1].data = persData;
                 mainChart.update();
+                
+                // Set the current date stamp
+                document.getElementById('dateStamp').innerText = "DATA_SYNC: " + new Date().toLocaleString();
             } catch (e) { console.error(e); }
         }
 
@@ -172,9 +177,9 @@
             const formID = "1FAIpQLSeqartuUmgNYc5RWaREX2yX0aGJU8_hWgAw8GKZiLK2QoXFpQ";
             const url = `https://docs.google.com/forms/d/e/${formID}/formResponse?entry.931849910=${vals[0]}&entry.1206314523=${vals[1]}&entry.1670010429=${vals[2]}&entry.152757542=${vals[3]}&submit=Submit`;
 
-            document.getElementById('statusMsg').innerText = "Transmitting...";
+            document.getElementById('statusMsg').innerText = "Transmitting to MAAS Core...";
             fetch(url, { mode: 'no-cors' }).then(() => {
-                document.getElementById('statusMsg').innerText = "Sync Complete.";
+                document.getElementById('statusMsg').innerText = "Telemetry synchronized.";
                 syncData();
             });
         }
@@ -186,28 +191,31 @@
 
             overlay.style.display = 'flex';
             fill.style.width = '20%';
-            text.innerText = "Initializing PDF Engine...";
+            text.innerText = "Initializing Stealth Capture...";
 
             const element = document.getElementById('capture-area');
             const opt = { 
                 margin: 0.2, 
                 filename: 'Stillflare_Intelligence_Report.pdf', 
-                html2canvas: { scale: 1.5, useCORS: true }, 
+                html2canvas: { 
+                    scale: 1.5, 
+                    useCORS: true,
+                    onclone: (clonedDoc) => {
+                        // THE FIX: Hide the loading bar in the cloned document so it's not in the PDF
+                        clonedDoc.getElementById('pdfOverlay').style.display = 'none';
+                    }
+                }, 
                 jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } 
             };
 
             setTimeout(() => {
-                fill.style.width = '60%';
-                text.innerText = "Capturing Analytics & Graphs...";
+                fill.style.width = '70%';
+                text.innerText = "Processing Data Vistas...";
                 
-                html2pdf().set(opt).from(element).toPdf().get('pdf').then((pdf) => {
-                    fill.style.width = '90%';
-                    text.innerText = "Finalizing Document...";
-                }).save().then(() => {
+                html2pdf().set(opt).from(element).save().then(() => {
                     fill.style.width = '100%';
                     text.innerText = "Export Complete.";
-                    setTimeout(() => { overlay.style.display = 'none'; }, 1000);
-                    alert("Report successfully downloaded.");
+                    setTimeout(() => { overlay.style.display = 'none'; }, 800);
                 });
             }, 500);
         }
