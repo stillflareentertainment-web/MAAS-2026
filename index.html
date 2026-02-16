@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STILLFLARE // Intelligence Suite v2.3</title>
+    <title>STILLFLARE // Intelligence Suite v2.4</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
@@ -21,12 +21,11 @@
         
         .dashboard-card { background: var(--card-bg); width: 100%; max-width: 650px; padding: 40px; border-radius: 20px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); position: relative; }
 
-        /* LOADING OVERLAY - Now with Stealth Capture compatibility */
         #pdfOverlay {
             display: none;
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.98);
             z-index: 100;
             border-radius: 20px;
             flex-direction: column;
@@ -65,15 +64,15 @@
 
     <div class="dashboard-card" id="capture-area">
         <div id="pdfOverlay">
-            <h2 style="color: var(--brand-blue); margin: 0;">Intelligence Report Generation</h2>
-            <p id="loaderText" style="font-size: 13px; color: var(--text-muted);">Executing stealth capture logic...</p>
+            <h2 style="color: var(--brand-blue); margin: 0;">Precision Data Export</h2>
+            <p id="loaderText" style="font-size: 13px; color: var(--text-muted);">Stabilizing interface for capture...</p>
             <div class="loader-bar-bg"><div id="loaderFill" class="loader-bar-fill"></div></div>
         </div>
 
         <div class="header-flex">
             <div>
                 <h1>Stillflare Intelligence Suite</h1>
-                <div class="stat-label">MAAS // SECURE TERMINAL v2.3</div>
+                <div class="stat-label">MAAS // SECURE TERMINAL v2.4</div>
             </div>
             <div id="dateStamp" style="font-size: 10px; color: var(--text-muted);"></div>
         </div>
@@ -162,9 +161,7 @@
                 mainChart.data.datasets[0].data = commData;
                 mainChart.data.datasets[1].data = persData;
                 mainChart.update();
-                
-                // Set the current date stamp
-                document.getElementById('dateStamp').innerText = "DATA_SYNC: " + new Date().toLocaleString();
+                document.getElementById('dateStamp').innerText = "SYNC: " + new Date().toLocaleString();
             } catch (e) { console.error(e); }
         }
 
@@ -177,7 +174,7 @@
             const formID = "1FAIpQLSeqartuUmgNYc5RWaREX2yX0aGJU8_hWgAw8GKZiLK2QoXFpQ";
             const url = `https://docs.google.com/forms/d/e/${formID}/formResponse?entry.931849910=${vals[0]}&entry.1206314523=${vals[1]}&entry.1670010429=${vals[2]}&entry.152757542=${vals[3]}&submit=Submit`;
 
-            document.getElementById('statusMsg').innerText = "Transmitting to MAAS Core...";
+            document.getElementById('statusMsg').innerText = "Transmitting...";
             fetch(url, { mode: 'no-cors' }).then(() => {
                 document.getElementById('statusMsg').innerText = "Telemetry synchronized.";
                 syncData();
@@ -190,33 +187,45 @@
             const text = document.getElementById('loaderText');
 
             overlay.style.display = 'flex';
-            fill.style.width = '20%';
-            text.innerText = "Initializing Stealth Capture...";
+            fill.style.width = '10%';
+            text.innerText = "Initializing Engine...";
 
             const element = document.getElementById('capture-area');
             const opt = { 
                 margin: 0.2, 
                 filename: 'Stillflare_Intelligence_Report.pdf', 
                 html2canvas: { 
-                    scale: 1.5, 
+                    scale: 2, // Bumped back up for crispness
                     useCORS: true,
+                    logging: false,
                     onclone: (clonedDoc) => {
-                        // THE FIX: Hide the loading bar in the cloned document so it's not in the PDF
+                        // The crucial fix: hide overlay in the cloned doc
                         clonedDoc.getElementById('pdfOverlay').style.display = 'none';
                     }
                 }, 
                 jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } 
             };
 
+            // Stage 1: Wait for DOM stabilization
             setTimeout(() => {
-                fill.style.width = '70%';
-                text.innerText = "Processing Data Vistas...";
+                fill.style.width = '40%';
+                text.innerText = "Cloning Interface Assets...";
                 
-                html2pdf().set(opt).from(element).save().then(() => {
-                    fill.style.width = '100%';
-                    text.innerText = "Export Complete.";
-                    setTimeout(() => { overlay.style.display = 'none'; }, 800);
-                });
+                // Stage 2: Create the PDF worker
+                const worker = html2pdf().set(opt).from(element).toPdf();
+
+                // Stage 3: Artificial delay to ensure 'onclone' has finished CSS hiding
+                setTimeout(() => {
+                    fill.style.width = '80%';
+                    text.innerText = "Rendering Stealth View...";
+                    
+                    worker.save().then(() => {
+                        fill.style.width = '100%';
+                        text.innerText = "Export Successful.";
+                        setTimeout(() => { overlay.style.display = 'none'; }, 1000);
+                    });
+                }, 1500); // 1.5 second pause for the "Stealth" logic to settle
+
             }, 500);
         }
 
