@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STILLFLARE // Dashboard</title>
+    <title>STILLFLARE // Dashboard v1.4</title>
     <style>
         :root {
             --brand-blue: #0061ff;
@@ -20,19 +20,17 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             display: flex;
             justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            padding: 40px 20px;
             margin: 0;
-            padding: 20px;
         }
 
         .dashboard-card {
             background: var(--card-bg);
             width: 100%;
-            max-width: 420px;
+            max-width: 480px;
             padding: 40px;
             border-radius: 16px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
 
         .pulse-section {
@@ -43,125 +41,104 @@
         }
 
         .pulse-label {
-            font-size: 12px;
-            font-weight: 600;
+            font-size: 11px;
+            font-weight: 700;
             color: var(--text-muted);
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
             text-transform: uppercase;
             margin-bottom: 8px;
         }
 
         .pulse-value {
-            font-size: 48px;
+            font-size: 54px;
             font-weight: 800;
             color: var(--brand-blue);
-            letter-spacing: -1px;
+            line-height: 1;
         }
 
-        h1 {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 24px;
-            color: var(--text-main);
-        }
-
-        .slider-container {
-            margin-bottom: 20px;
-        }
-
-        .slider-header {
-            display: flex;
-            justify-content: space-between;
-            font-size: 14px;
-            font-weight: 500;
+        .sample-size {
+            font-size: 13px;
             color: var(--text-muted);
-            margin-bottom: 10px;
+            margin-top: 8px;
+            font-weight: 500;
         }
+
+        h1 { font-size: 20px; font-weight: 700; margin: 0 0 12px 0; }
+        
+        .intro-text {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .instruction-box {
+            background: #f1f4f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            font-size: 13px;
+        }
+
+        .slider-container { margin-bottom: 22px; }
+        .slider-header { display: flex; justify-content: space-between; font-size: 14px; font-weight: 600; color: var(--text-main); margin-bottom: 8px; }
 
         input[type="range"] {
-            width: 100%;
-            height: 6px;
-            background: #dcdfe4;
-            border-radius: 5px;
-            appearance: none;
-            outline: none;
+            width: 100%; height: 6px; background: #dcdfe4; border-radius: 5px; appearance: none; outline: none;
         }
 
         input[type="range"]::-webkit-slider-thumb {
-            appearance: none;
-            width: 18px;
-            height: 18px;
-            background: var(--brand-blue);
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            appearance: none; width: 20px; height: 20px; background: var(--brand-blue); border-radius: 50%; cursor: pointer; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         #submitBtn {
-            width: 100%;
-            padding: 14px;
-            background-color: var(--brand-blue);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            margin-top: 10px;
+            width: 100%; padding: 16px; background-color: var(--brand-blue); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.2s;
         }
 
-        #submitBtn:hover {
-            background-color: #0052d9;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 97, 255, 0.3);
-        }
-
-        #submitBtn:disabled {
-            background-color: #a3acb9;
-            cursor: not-allowed;
-        }
-
-        #statusMsg {
-            margin-top: 16px;
-            font-size: 13px;
-            color: var(--text-muted);
-            text-align: center;
-        }
+        #submitBtn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 97, 255, 0.3); }
+        #statusMsg { margin-top: 16px; font-size: 13px; color: var(--text-muted); text-align: center; font-style: italic; }
     </style>
 </head>
 <body>
 
     <div class="dashboard-card">
         <div class="pulse-section">
-            <div class="pulse-label">Community Pulse Average</div>
+            <div class="pulse-label">Current Community Pulse</div>
             <div id="livePulseVal" class="pulse-value">--%</div>
+            <div id="sampleCount" class="sample-size">Syncing live data...</div>
         </div>
 
-        <h1>Stillflare MAAS Engine</h1>
+        <h1>Stillflare Intelligence Engine</h1>
+        <p class="intro-text">
+            Welcome to the MAAS (Multi-Agent Analytics System). This portal captures real-time biometric and operational sentiment to generate a unified "Pulse" of the Stillflare community.
+        </p>
+
+        <div class="instruction-box">
+            <strong>How to participate:</strong><br>
+            1. Adjust the sliders to reflect your current status.<br>
+            2. Click "Transmit Updates" to sync with the cloud.<br>
+            3. Watch the Pulse Average at the top; it updates live as new transmissions arrive from across the network.
+        </div>
 
         <div class="slider-container">
             <div class="slider-header"><span>Quality of Service</span><span id="qsVal">50%</span></div>
             <input type="range" id="qs" min="0" max="100" value="50" oninput="update('qs')">
         </div>
-
         <div class="slider-container">
             <div class="slider-header"><span>Operational Intelligence</span><span id="oiVal">50%</span></div>
             <input type="range" id="oi" min="0" max="100" value="50" oninput="update('oi')">
         </div>
-
         <div class="slider-container">
             <div class="slider-header"><span>Internal Capability</span><span id="icVal">50%</span></div>
             <input type="range" id="ic" min="0" max="100" value="50" oninput="update('ic')">
         </div>
-
         <div class="slider-container">
             <div class="slider-header"><span>Engine Power</span><span id="epVal">50%</span></div>
             <input type="range" id="ep" min="0" max="100" value="50" oninput="update('ep')">
         </div>
 
         <button id="submitBtn" onclick="submitToPulse()">Transmit Updates</button>
-        <div id="statusMsg">System ready for transmission.</div>
+        <div id="statusMsg">System ready for encrypted transmission.</div>
     </div>
 
     <script>
@@ -173,20 +150,24 @@
 
         async function refreshPulse() {
             try {
-                const response = await fetch(CSV_URL);
+                const response = await fetch(CSV_URL + "&cache_bust=" + Date.now());
                 const data = await response.text();
-                const rows = data.split('\n').slice(1);
-                let totalScore = 0, entryCount = 0;
+                const rows = data.split('\n').filter(row => row.trim() !== "").slice(1);
+                
+                let totalScore = 0;
+                let entryCount = rows.length;
 
                 rows.forEach(row => {
                     const cols = row.split(',');
                     if (cols.length >= 5) {
                         const rowAvg = (parseInt(cols[1]) + parseInt(cols[2]) + parseInt(cols[3]) + parseInt(cols[4])) / 4;
-                        if (!isNaN(rowAvg)) { totalScore += rowAvg; entryCount++; }
+                        if (!isNaN(rowAvg)) totalScore += rowAvg;
                     }
                 });
 
-                document.getElementById('livePulseVal').innerText = (entryCount > 0 ? Math.round(totalScore / entryCount) : 0) + "%";
+                const finalPulse = entryCount > 0 ? Math.round(totalScore / entryCount) : 0;
+                document.getElementById('livePulseVal').innerText = finalPulse + "%";
+                document.getElementById('sampleCount').innerText = `Based on ${entryCount} live transmissions`;
             } catch (e) { console.error("Sync Error"); }
         }
 
@@ -199,11 +180,10 @@
 
             btn.disabled = true;
             btn.innerText = "Transmitting...";
-            msg.innerText = "Connecting to cloud services...";
 
             fetch(submitURL, { mode: 'no-cors' }).then(() => {
-                msg.innerText = "Data successfully synchronized.";
-                btn.innerText = "Success";
+                msg.innerText = "Data successfully ingested into community pool.";
+                btn.innerText = "Transmission Complete";
                 setTimeout(() => { refreshPulse(); btn.disabled = false; btn.innerText = "Transmit Updates"; }, 2000);
             });
         }
