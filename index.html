@@ -6,43 +6,42 @@
     <title>STILLFLARE // MAAS TERMINAL 2026</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* 2026 HR DARK STYLE */
+        /* MAIN DASHBOARD STYLING */
         body { background: #000; color: #fff; font-family: "Courier New", Courier, monospace; display: flex; justify-content: center; padding: 20px; margin: 0; }
         
         .terminal-card { 
             background: #000; width: 100%; max-width: 900px; padding: 40px; 
-            border: 1px solid #333; position: relative;
-            box-shadow: 0 0 20px rgba(255,255,255,0.05);
+            border: 1px solid #333; box-shadow: 0 0 30px rgba(255,255,255,0.05);
         }
 
         .hr-header { text-align: center; margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 20px; }
-        .hr-header img { width: 100%; max-width: 600px; height: auto; filter: drop-shadow(0 0 5px #fff); }
+        .hr-header img { width: 100%; max-width: 750px; height: auto; }
 
-        .mission-brief { font-size: 12px; line-height: 1.6; border: 1px solid #333; padding: 20px; margin-bottom: 30px; background: #0a0a0a; color: #aaa; }
-        .mission-brief b { color: #fff; }
+        .mission-brief { font-size: 12px; line-height: 1.6; border: 1px solid #333; padding: 20px; margin-bottom: 30px; background: #0a0a0a; color: #888; }
+        .mission-brief b { color: #fff; letter-spacing: 1px; }
 
         .pulse-matrix { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
         .pulse-matrix td { border: 1px solid #333; padding: 20px; text-align: center; }
-        .label { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 2px; }
-        .value { font-size: 32px; font-weight: bold; color: #fff; margin-top: 5px; }
+        .label { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 2px; }
+        .value { font-size: 32px; font-weight: bold; color: #fff; }
 
         .chart-frame { border: 1px solid #333; height: 300px; padding: 15px; margin-bottom: 30px; background: #050505; }
 
-        .slider-group { border-top: 1px solid #333; padding-top: 25px; }
+        .slider-group { border-top: 1px dashed #333; padding-top: 25px; }
         .slider-row { display: flex; align-items: center; margin-bottom: 20px; }
-        .slider-label { flex: 2; font-size: 12px; font-weight: bold; color: #888; }
+        .slider-label { flex: 2; font-size: 12px; font-weight: bold; color: #aaa; }
         .slider-input { flex: 3; accent-color: #fff; cursor: pointer; }
-        .slider-val { flex: 1; text-align: right; font-weight: bold; font-size: 16px; }
+        .slider-val { flex: 1; text-align: right; font-weight: bold; font-size: 18px; color: #fff; }
 
         .ops-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 40px; }
         button { 
-            background: #000; color: #fff; border: 1px solid #fff; padding: 18px; 
+            background: #000; color: #fff; border: 2px solid #fff; padding: 18px; 
             font-family: "Courier New"; font-weight: bold; cursor: pointer; 
-            text-transform: uppercase; transition: 0.3s;
+            text-transform: uppercase; transition: 0.2s;
         }
-        button:hover { background: #fff; color: #000; box-shadow: 0 0 15px #fff; }
+        button:hover { background: #fff; color: #000; }
 
-        #status { font-size: 10px; color: #444; text-align: center; margin-top: 20px; letter-spacing: 3px; }
+        #status { font-size: 10px; color: #333; text-align: center; margin-top: 20px; letter-spacing: 5px; }
     </style>
 </head>
 <body>
@@ -54,9 +53,7 @@
 
     <div class="mission-brief">
         <b>[ OPERATIONAL PROTOCOL 2026 ]</b><br>
-        The <b>MAAS Intelligence Suite</b> serves as a decentralized telemetry node. By committing your local data, you contribute to the <b>Global Community Pulse</b>, a real-time aggregate of operational readiness across the Stillflare network. 
-        <br><br>
-        <b>[ USE CASE ]</b>: Adjust your local vectors (QS, OI, IC, EP) based on daily performance. Commit to the cloud to visualize your trajectory against the collective baseline.
+        The <b>MAAS Intelligence Suite</b> serves as a decentralized telemetry node. By committing your local data, you contribute to the <b>Global Community Pulse</b>. This data drives collective stability and helps determine the trajectory of Stillflare development.
     </div>
 
     <table class="pulse-matrix">
@@ -70,18 +67,18 @@
     <div class="chart-frame"><canvas id="mainChart"></canvas></div>
 
     <div class="slider-group">
-        <div class="slider-row"><div class="slider-label">QUALITY_OF_SERVICE</div><input type="range" id="qs" class="slider-input" min="0" max="100" value="50" oninput="u('qs')"><div id="qsVal" class="slider-val">50%</div></div>
-        <div class="slider-row"><div class="slider-label">OPERATIONAL_INTEL</div><input type="range" id="oi" class="slider-input" min="0" max="100" value="50" oninput="u('oi')"><div id="oiVal" class="slider-val">50%</div></div>
-        <div class="slider-row"><div class="slider-label">INTERNAL_CAPACITY</div><input type="range" id="ic" class="slider-input" min="0" max="100" value="50" oninput="u('ic')"><div id="icVal" class="slider-val">50%</div></div>
-        <div class="slider-row"><div class="slider-label">ENGINE_POWER</div><input type="range" id="ep" class="slider-input" min="0" max="100" value="50" oninput="u('ep')"><div id="epVal" class="slider-val">50%</div></div>
+        <div class="slider-row"><div class="slider-label">QS_SERVICE</div><input type="range" id="qs" class="slider-input" min="0" max="100" value="50" oninput="u('qs')"><div id="qsVal" class="slider-val">50%</div></div>
+        <div class="slider-row"><div class="slider-label">OI_INTEL</div><input type="range" id="oi" class="slider-input" min="0" max="100" value="50" oninput="u('oi')"><div id="oiVal" class="slider-val">50%</div></div>
+        <div class="slider-row"><div class="slider-label">IC_CAPACITY</div><input type="range" id="ic" class="slider-input" min="0" max="100" value="50" oninput="u('ic')"><div id="icVal" class="slider-val">50%</div></div>
+        <div class="slider-row"><div class="slider-label">EP_ENGINE</div><input type="range" id="ep" class="slider-input" min="0" max="100" value="50" oninput="u('ep')"><div id="epVal" class="slider-val">50%</div></div>
     </div>
 
     <div class="ops-panel">
-        <button onclick="transmitData()">[ COMMIT_TO_CLOUD ]</button>
+        <button onclick="transmitData()">[ COMMIT_SYNC ]</button>
         <button onclick="generateTextReport()">[ ARCHIVE_REPORT ]</button>
     </div>
 
-    <div id="status">CONNECTION: SECURE // NODE: ACTIVE // 2026_STILLFLARE_OS</div>
+    <div id="status">NODE_STABLE // 2026_STILLFLARE_OS</div>
 </div>
 
 <script>
@@ -97,8 +94,8 @@
             data: {
                 labels: [], 
                 datasets: [
-                    { label: 'GLOBAL_AVG', borderColor: '#444', data: [], tension: 0, borderWidth: 1, pointRadius: 0 },
-                    { label: 'LOCAL_LOG', borderColor: '#fff', data: [], tension: 0.1, borderWidth: 3, pointRadius: 2 }
+                    { label: 'GLOBAL', borderColor: '#333', data: [], tension: 0, borderWidth: 1, pointRadius: 0 },
+                    { label: 'LOCAL', borderColor: '#fff', data: [], tension: 0, borderWidth: 2, pointRadius: 0 }
                 ]
             },
             options: { 
@@ -148,9 +145,9 @@
         h.push(avg); localStorage.setItem('stillflare_history', JSON.stringify(h));
         const fID = "1FAIpQLSeqartuUmgNYc5RWaREX2yX0aGJU8_hWgAw8GKZiLK2QoXFpQ";
         const url = `https://docs.google.com/forms/d/e/${fID}/formResponse?entry.931849910=${v[0]}&entry.1206314523=${v[1]}&entry.1670010429=${v[2]}&entry.152757542=${v[3]}&submit=Submit`;
-        document.getElementById('status').innerText = "TRANSMITTING TO MAAS CORE...";
+        document.getElementById('status').innerText = "PUSHING TELEMETRY...";
         fetch(url, { mode: 'no-cors' }).then(() => {
-            document.getElementById('status').innerText = "SYNC SUCCESSFUL.";
+            document.getElementById('status').innerText = "SYNC COMPLETE.";
             syncData();
         });
     }
@@ -166,53 +163,54 @@
         reportWindow.document.write(`
             <html>
             <head>
-                <title>MAAS_SECURE_ARCHIVE_2026</title>
+                <title>STILLFLARE_HR_ARCHIVE_2026</title>
                 <style>
-                    body { background: #000; color: #fff; font-family: "Courier New", monospace; padding: 60px; line-height: 1.5; }
-                    .banner { width: 100%; border-bottom: 2px solid #fff; padding-bottom: 20px; margin-bottom: 40px; text-align: center;}
-                    .banner img { width: 100%; max-width: 700px; }
-                    .section { margin-bottom: 40px; border-left: 3px solid #fff; padding-left: 20px; }
-                    .data-row { display: flex; justify-content: space-between; max-width: 600px; margin-bottom: 10px; border-bottom: 1px dotted #333; }
-                    .log-table { width: 100%; max-width: 600px; border-collapse: collapse; margin-top: 20px; }
-                    .log-table td { border: 1px solid #333; padding: 10px; text-align: center; }
-                    .footer { font-size: 10px; color: #444; margin-top: 100px; border-top: 1px solid #333; padding-top: 20px; }
-                    button { background: #fff; color: #000; padding: 10px 20px; font-weight: bold; border: none; cursor: pointer; margin-top: 20px; }
-                    @media print { button { display: none; } body { padding: 20px; } }
+                    body { background: #000; color: #fff; font-family: "Courier New", monospace; padding: 40px; line-height: 1.4; }
+                    .banner { text-align: center; border-bottom: 2px solid #fff; padding-bottom: 20px; margin-bottom: 30px; }
+                    .banner img { width: 100%; max-width: 650px; }
+                    .meta { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 40px; color: #888; }
+                    .section { margin-bottom: 30px; border-left: 2px solid #fff; padding-left: 20px; }
+                    .data-row { display: flex; justify-content: space-between; max-width: 500px; margin-bottom: 8px; border-bottom: 1px dotted #333; }
+                    .log-table { width: 100%; max-width: 500px; border-collapse: collapse; margin-top: 15px; }
+                    .log-table td { border: 1px solid #333; padding: 8px; text-align: center; }
+                    button { background: #fff; color: #000; padding: 15px; font-weight: bold; border: none; cursor: pointer; margin-top: 40px; width: 100%; max-width: 500px; }
+                    @media print { button { display: none; } }
                 </style>
             </head>
             <body>
                 <div class="banner">
                     <img src="https://raw.githubusercontent.com/stillflareentertainment-web/stillflare-lab/main/STILLFLARE%20BANNER.png">
-                    <h1>OFFICIAL INTELLIGENCE ARCHIVE</h1>
-                    <p>STILLFLARE MAAS // HR_PROTOCOL_2026</p>
+                    <h2>OFFICIAL INTELLIGENCE ARCHIVE</h2>
+                    <p>MAAS HR PROTOCOL // v3.1</p>
+                </div>
+
+                <div class="meta">
+                    <span>NODE_ID: ${Math.random().toString(36).substr(2, 9).toUpperCase()}</span>
+                    <span>TIMESTAMP: ${ts}</span>
                 </div>
 
                 <div class="section">
-                    <h3>[ 01 // MISSION STATEMENT ]</h3>
-                    <p>This document verifies the operational telemetry of a local operative within the Stillflare ecosystem. The MAAS protocol ensures data transparency, comparing individual readiness against global community standards to drive future development and collective stability.</p>
+                    <h3>[ MISSION PROTOCOL ]</h3>
+                    <p>This document serves as a verified archive of local operative telemetry. By logging performance against the Global Community Pulse, Stillflare Labs ensures decentralized data integrity and communal growth trajectory.</p>
                 </div>
 
                 <div class="section">
-                    <h3>[ 02 // PERFORMANCE SUMMARY ]</h3>
-                    <div class="data-row"><span>TIMESTAMP:</span><span>${ts}</span></div>
-                    <div class="data-row"><span>GLOBAL_COMMUNITY_PULSE:</span><span>${gPulse}</span></div>
-                    <div class="data-row"><span>LOCAL_OPERATIVE_PULSE:</span><span>${lPulse}</span></div>
-                    <div class="data-row"><span>VECTOR_TRAJECTORY:</span><span>${trend}</span></div>
+                    <h3>[ PERFORMANCE DATA ]</h3>
+                    <div class="data-row"><span>GLOBAL_PULSE:</span><span>${gPulse}</span></div>
+                    <div class="data-row"><span>LOCAL_PULSE:</span><span>${lPulse}</span></div>
+                    <div class="data-row"><span>TREND_VECTOR:</span><span>${trend}</span></div>
                 </div>
 
                 <div class="section">
-                    <h3>[ 03 // HISTORICAL LOG ]</h3>
+                    <h3>[ HISTORICAL LOG ]</h3>
                     <table class="log-table">
-                        <tr><td>INGESTION_ID</td><td>PERFORMANCE_SCORE</td></tr>
-                        ${history.map((val, i) => `<tr><td>ENTRY_${i+1}</td><td>${val}%</td></tr>`).join('')}
+                        <tr><td>ENTRY_ID</td><td>RESULT_SCORE</td></tr>
+                        ${history.map((val, i) => `<tr><td>LOG_00${i+1}</td><td>${val}%</td></tr>`).join('')}
                     </table>
                 </div>
 
-                <div class="footer">
-                    CONFIDENTIAL // STILLFLARE LABS 2026 // END OF TRANSMISSION
-                </div>
-
-                <button onclick="window.print()">[ PRINT TO PHYSICAL_DISK ]</button>
+                <button onclick="window.print()">[ DOWNLOAD PHYSICAL ARCHIVE ]</button>
+                <p style="font-size: 10px; color: #333; margin-top: 50px;">CONFIDENTIAL // STILLFLARE LABS 2026</p>
             </body>
             </html>
         `);
