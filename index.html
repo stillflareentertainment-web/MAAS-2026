@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STILLFLARE // MAAS ENGINE v3.4</title>
+    <title>STILLFLARE // MAAS ENGINE v3.4.2</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --accent-blue: #0055ff; --electric-blue: #00d4ff; }
         body { 
             background: #000; color: #fff; font-family: 'Inter', sans-serif; margin: 0; 
-            padding: 100px 20px 400px; /* Long scroll preserved */
+            padding: 100px 20px 400px; 
             background-image: radial-gradient(circle at center, #001a4d 0%, #000 100%);
         }
         .engine-wrap { max-width: 900px; margin: 0 auto; }
         .banner { text-align: center; margin-bottom: 60px; }
         .banner img { width: 100%; max-width: 700px; filter: drop-shadow(0 0 20px rgba(0,85,255,0.4)); }
         
-        /* Stats Grid */
+        /* Stats Display */
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px; }
         .stat-card { background: rgba(255,255,255,0.05); padding: 30px; border-radius: 20px; text-align: center; border: 1px solid #111; }
         .stat-card span { display: block; font-size: 42px; font-weight: 900; color: var(--electric-blue); }
@@ -26,47 +26,51 @@
         .control-group { margin-bottom: 25px; }
         .label-row { display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; color: var(--accent-blue); margin-bottom: 10px; }
         
-        input[type="range"] { -webkit-appearance: none; width: 100%; height: 4px; background: #222; outline: none; }
-        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; background: #fff; border-radius: 50%; cursor: pointer; box-shadow: 0 0 10px var(--accent-blue); }
+        input[type="range"] { -webkit-appearance: none; width: 100%; height: 4px; background: #222; outline: none; border-radius: 2px; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; background: #fff; border-radius: 50%; cursor: pointer; border: 3px solid var(--accent-blue); box-shadow: 0 0 10px var(--accent-blue); }
 
-        .chart-container { background: #000; border: 1px solid #111; border-radius: 20px; padding: 20px; height: 400px; margin-bottom: 50px; }
+        .chart-container { background: #000; border: 1px solid #111; border-radius: 20px; padding: 20px; height: 400px; margin-bottom: 50px; position: relative; }
         
         .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        button { padding: 20px; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; }
+        button { 
+            padding: 22px; border-radius: 50px; border: none; font-weight: 900; 
+            cursor: pointer; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s ease;
+        }
         .btn-main { background: var(--accent-blue); color: #fff; }
-        .btn-sec { background: transparent; color: #fff; border: 1px solid #333; }
+        .btn-sec { background: transparent; color: #fff; border: 1.5px solid #444; }
+        button:hover { transform: translateY(-3px); filter: brightness(1.2); }
         
-        .vision { margin-top: 200px; text-align: center; color: #333; font-size: 12px; border-top: 1px solid #111; padding-top: 40px; }
+        .vision { margin-top: 200px; text-align: center; color: #333; font-size: 12px; border-top: 1px solid #111; padding-top: 40px; line-height: 1.6; }
     </style>
 </head>
 <body>
 
 <div class="engine-wrap">
     <div class="banner">
-        <img src="https://raw.githubusercontent.com/stillflareentertainment-web/stillflare-lab/main/STILLFLARE%20BANNER.png">
+        <img src="https://raw.githubusercontent.com/stillflareentertainment-web/stillflare-lab/main/STILLFLARE%20BANNER.png" alt="Stillflare Banner">
     </div>
 
     <div class="stats-grid">
-        <div class="stat-card"><span id="gMean">50%</span><label>Global Identity Mean</label></div>
+        <div class="stat-card"><span id="gMean">48%</span><label>Global Identity Mean</label></div>
         <div class="stat-card"><span id="lMean">50%</span><label>Local Neural Mean</label></div>
     </div>
 
     <div class="panel">
         <div class="control-group">
             <div class="label-row"><span>QUALITY_SERVICE</span><span id="qsV">50%</span></div>
-            <input type="range" id="qs" value="50" oninput="runCalculus()">
+            <input type="range" id="qs" value="50" min="0" max="100" oninput="calculateMAAS()">
         </div>
         <div class="control-group">
             <div class="label-row"><span>OPERATIONAL_INTEL</span><span id="oiV">50%</span></div>
-            <input type="range" id="oi" value="50" oninput="runCalculus()">
+            <input type="range" id="oi" value="50" min="0" max="100" oninput="calculateMAAS()">
         </div>
         <div class="control-group">
             <div class="label-row"><span>INTERNAL_CAPACITY</span><span id="icV">50%</span></div>
-            <input type="range" id="ic" value="50" oninput="runCalculus()">
+            <input type="range" id="ic" value="50" min="0" max="100" oninput="calculateMAAS()">
         </div>
         <div class="control-group">
             <div class="label-row"><span>ENGINE_POWER</span><span id="epV">50%</span></div>
-            <input type="range" id="ep" value="50" oninput="runCalculus()">
+            <input type="range" id="ep" value="50" min="0" max="100" oninput="calculateMAAS()">
         </div>
     </div>
 
@@ -75,60 +79,92 @@
     </div>
 
     <div class="btn-row">
-        <button class="btn-main" onclick="alert('Telemetry Sync Successful')">Commit Telemetry</button>
-        <button class="btn-sec" onclick="window.print()">Print HR Archive</button>
+        <button class="btn-main" id="commitBtn" onclick="commitTelemetry()">Commit Telemetry</button>
+        <button class="btn-sec" id="reportBtn" onclick="generateHRReport()">Archive HR Report</button>
     </div>
 
     <div class="vision">
-        STILLFLARE LABS // NEURO-OPERATIONAL // v3.4.1 FIX
+        STILLFLARE LABS // NEURO-OPERATIONAL // v3.4.2 STABLE<br>
+        DECENTRALIZED BASELINE PROTOCOL
     </div>
 </div>
 
 <script>
-    let chart;
-    function init() {
+    let myChart;
+
+    // 1. Initialize the Chart
+    function initChart() {
         const ctx = document.getElementById('maasChart').getContext('2d');
-        chart = new Chart(ctx, {
+        myChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ['-4', '-3', '-2', '-1', 'NOW'],
+                labels: ['T-4', 'T-3', 'T-2', 'T-1', 'NOW'],
                 datasets: [{
+                    label: 'Neural Output',
                     data: [45, 48, 42, 47, 50],
                     borderColor: '#0055ff',
-                    tension: 0.4,
+                    backgroundColor: 'rgba(0, 85, 255, 0.1)',
                     fill: true,
-                    backgroundColor: 'rgba(0,85,255,0.1)'
+                    tension: 0.4,
+                    pointRadius: 5
                 }]
             },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true, max: 100, grid: { color: '#111' } },
+                    x: { grid: { color: '#111' } }
+                },
+                plugins: { legend: { display: false } }
+            }
         });
-        runCalculus(); // Run once at start to prevent NaN
     }
 
-    function runCalculus() {
-        const ids = ['qs', 'oi', 'ic', 'ep'];
-        let total = 0;
-        
-        ids.forEach(id => {
-            const val = parseInt(document.getElementById(id).value) || 0;
-            document.getElementById(id + 'V').innerText = val + '%';
-            total += val;
-        });
+    // 2. The Calculus Engine (Math logic)
+    function calculateMAAS() {
+        const qs = parseInt(document.getElementById('qs').value);
+        const oi = parseInt(document.getElementById('oi').value);
+        const ic = parseInt(document.getElementById('ic').value);
+        const ep = parseInt(document.getElementById('ep').value);
 
-        const mean = Math.round(total / ids.length);
+        // Update Labels
+        document.getElementById('qsV').innerText = qs + '%';
+        document.getElementById('oiV').innerText = oi + '%';
+        document.getElementById('icV').innerText = ic + '%';
+        document.getElementById('epV').innerText = ep + '%';
+
+        // Calculate Mean
+        const mean = Math.round((qs + oi + ic + ep) / 4);
         
-        // Update Stats
+        // Update Displays
         document.getElementById('lMean').innerText = mean + '%';
-        document.getElementById('gMean').innerText = (mean - 2) + '%'; // Simulated Global Baseline
-        
+        document.getElementById('gMean').innerText = (mean - 2) + '%'; 
+
         // Update Chart
-        if(chart) {
-            chart.data.datasets[0].data[4] = mean;
-            chart.update();
+        if (myChart) {
+            myChart.data.datasets[0].data[4] = mean;
+            myChart.update();
         }
     }
 
-    window.onload = init;
+    // 3. The Commit Action
+    function commitTelemetry() {
+        alert("TRANSMISSION SUCCESSFUL\n\nNeural Trajectory data has been committed to the Stillflare Labs decentralized baseline.");
+    }
+
+    // 4. The HR Report Action (Printer Friendly)
+    function generateHRReport() {
+        window.print(); 
+        // Note: Printing is the safest 'Archive' method for GitHub pages
+    }
+
+    // Run on startup
+    window.onload = function() {
+        initChart();
+        calculateMAAS();
+    };
 </script>
+
 </body>
 </html>
