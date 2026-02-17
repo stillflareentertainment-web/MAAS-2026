@@ -3,109 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STILLFLARE // MAAS ENGINE v3.4.6</title>
+    <title>STILLFLARE // MAAS ENGINE v3.4</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --accent: #0055ff; --electric: #00d4ff; }
         body { 
-            background: #000; color: #fff; font-family: sans-serif; margin: 0; 
-            padding: 80px 20px 500px; 
+            background: #000; color: #fff; font-family: 'Inter', sans-serif; margin: 0; 
+            /* This gives it the length you like without breaking the script */
+            padding: 80px 20px 300px; 
             background-image: radial-gradient(circle at center, #001a4d 0%, #000 100%);
         }
-        .container { max-width: 800px; margin: 0 auto; }
-        .banner { text-align: center; margin-bottom: 50px; }
-        .banner img { width: 100%; max-width: 600px; }
+        .engine-wrap { max-width: 900px; margin: 0 auto; }
+        .banner { text-align: center; margin-bottom: 60px; }
+        .banner img { width: 100%; max-width: 700px; filter: drop-shadow(0 0 20px rgba(0,85,255,0.4)); }
         
-        /* Stats */
-        .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px; }
-        .stat-card { background: rgba(255,255,255,0.05); padding: 30px; border-radius: 20px; text-align: center; border: 1px solid #222; }
-        .stat-card span { display: block; font-size: 48px; font-weight: 900; color: var(--electric); }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px; }
+        .stat-card { background: rgba(255,255,255,0.05); padding: 30px; border-radius: 20px; text-align: center; border: 1px solid #111; }
+        .stat-card span { display: block; font-size: 42px; font-weight: 900; color: var(--electric); }
+        .stat-card label { font-size: 10px; letter-spacing: 2px; color: #555; text-transform: uppercase; }
 
-        /* Visual Engine (Replaces the Chart for stability) */
-        .engine-viz { background: #111; padding: 40px; border-radius: 25px; margin-bottom: 40px; border: 1px solid var(--accent); }
-        .progress-track { background: #000; height: 20px; border-radius: 10px; overflow: hidden; border: 1px solid #333; }
-        .progress-fill { background: var(--accent); height: 100%; width: 50%; transition: 0.4s; box-shadow: 0 0 20px var(--accent); }
-
-        .panel { background: rgba(255,255,255,0.03); padding: 40px; border-radius: 25px; margin-bottom: 40px; }
+        .panel { background: rgba(0,0,0,0.6); border: 1px solid #222; border-radius: 25px; padding: 40px; margin-bottom: 40px; }
         .control-group { margin-bottom: 25px; }
-        input[type="range"] { width: 100%; cursor: pointer; }
+        .label-row { display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; color: var(--accent); margin-bottom: 10px; }
+        
+        input[type="range"] { -webkit-appearance: none; width: 100%; height: 4px; background: #222; outline: none; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; background: #fff; border-radius: 50%; cursor: pointer; border: 3px solid var(--accent); }
 
+        .chart-container { background: #000; border: 1px solid #111; border-radius: 20px; padding: 20px; height: 400px; margin-bottom: 50px; }
+        
         .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        button { padding: 25px; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
-        .btn-blue { background: var(--accent); color: #fff; }
-        .btn-outline { background: transparent; color: #fff; border: 1px solid #444; }
-        button:hover { transform: translateY(-3px); background: #fff; color: #000; }
+        button { padding: 22px; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; }
+        .btn-main { background: var(--accent); color: #fff; }
+        .btn-sec { background: transparent; color: #fff; border: 1px solid #333; }
+        
+        .vision { margin-top: 150px; text-align: center; color: #333; font-size: 12px; border-top: 1px solid #111; padding-top: 40px; }
     </style>
 </head>
 <body>
 
-<div class="container">
+<div class="engine-wrap">
     <div class="banner">
         <img src="https://raw.githubusercontent.com/stillflareentertainment-web/stillflare-lab/main/STILLFLARE%20BANNER.png">
     </div>
 
-    <div class="stats">
-        <div class="stat-card"><span id="lMean">50%</span><label>LOCAL NEURAL MEAN</label></div>
-        <div class="stat-card"><span id="gMean">48%</span><label>GLOBAL IDENTITY MEAN</label></div>
-    </div>
-
-    <div class="engine-viz">
-        <div style="margin-bottom:15px; font-size:12px; letter-spacing:2px;">NEURAL TRAJECTORY LOAD:</div>
-        <div class="progress-track">
-            <div id="pFill" class="progress-fill"></div>
-        </div>
+    <div class="stats-grid">
+        <div class="stat-card"><span id="gMean">48%</span><label>Global Identity Mean</label></div>
+        <div class="stat-card"><span id="lMean">50%</span><label>Local Neural Mean</label></div>
     </div>
 
     <div class="panel">
         <div class="control-group">
-            <label>QUALITY_SERVICE: <span id="qsV">50%</span></label>
-            <input type="range" id="qs" value="50" oninput="run()">
+            <div class="label-row"><span>QUALITY_SERVICE</span><span id="qsV">50%</span></div>
+            <input type="range" id="qs" value="50" oninput="runCalculus()">
         </div>
         <div class="control-group">
-            <label>OPERATIONAL_INTEL: <span id="oiV">50%</span></label>
-            <input type="range" id="oi" value="50" oninput="run()">
+            <div class="label-row"><span>OPERATIONAL_INTEL</span><span id="oiV">50%</span></div>
+            <input type="range" id="oi" value="50" oninput="runCalculus()">
         </div>
         <div class="control-group">
-            <label>INTERNAL_CAPACITY: <span id="icV">50%</span></label>
-            <input type="range" id="ic" value="50" oninput="run()">
+            <div class="label-row"><span>INTERNAL_CAPACITY</span><span id="icV">50%</span></div>
+            <input type="range" id="ic" value="50" oninput="runCalculus()">
         </div>
         <div class="control-group">
-            <label>ENGINE_POWER: <span id="epV">50%</span></label>
-            <input type="range" id="ep" value="50" oninput="run()">
+            <div class="label-row"><span>ENGINE_POWER</span><span id="epV">50%</span></div>
+            <input type="range" id="ep" value="50" oninput="runCalculus()">
         </div>
     </div>
 
+    <div class="chart-container">
+        <canvas id="maasChart"></canvas>
+    </div>
+
     <div class="btn-row">
-        <button class="btn-blue" onclick="alert('DATA COMMITTED TO STILLFLARE MAAS')">Commit Telemetry</button>
-        <button class="btn-outline" onclick="window.print()">Archive HR Report</button>
+        <button class="btn-main" onclick="alert('Telemetry Sync Successful')">Commit Telemetry</button>
+        <button class="btn-sec" onclick="window.print()">Archive HR Report</button>
+    </div>
+
+    <div class="vision">
+        STILLFLARE LABS // NEURO-OPERATIONAL // v3.4.0 RESTORED
     </div>
 </div>
 
 <script>
-    function run() {
-        // Get values
+    let myChart;
+
+    function init() {
+        const ctx = document.getElementById('maasChart').getContext('2d');
+        myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['-4', '-3', '-2', '-1', 'NOW'],
+                datasets: [{
+                    data: [45, 48, 42, 47, 50],
+                    borderColor: '#0055ff',
+                    tension: 0.4,
+                    fill: true,
+                    backgroundColor: 'rgba(0,85,255,0.1)'
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        });
+        runCalculus(); 
+    }
+
+    function runCalculus() {
         const q = parseInt(document.getElementById('qs').value);
         const o = parseInt(document.getElementById('oi').value);
         const i = parseInt(document.getElementById('ic').value);
         const e = parseInt(document.getElementById('ep').value);
-
-        // Update labels
+        
         document.getElementById('qsV').innerText = q + '%';
         document.getElementById('oiV').innerText = o + '%';
         document.getElementById('icV').innerText = i + '%';
         document.getElementById('epV').innerText = e + '%';
 
-        // Math
         const mean = Math.round((q + o + i + e) / 4);
-        
-        // Update UI
         document.getElementById('lMean').innerText = mean + '%';
         document.getElementById('gMean').innerText = (mean - 2) + '%';
-        document.getElementById('pFill').style.width = mean + '%';
+        
+        if(myChart) {
+            myChart.data.datasets[0].data[4] = mean;
+            myChart.update();
+        }
     }
-    
-    // Initialize on load
-    run();
-</script>
 
+    window.onload = init;
+</script>
 </body>
 </html>
