@@ -3,40 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STILLFLARE // MAAS ENGINE v3.4</title>
+    <title>STILLFLARE // MAAS ENGINE v3.4.8</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --accent: #0055ff; --electric: #00d4ff; }
         body { 
             background: #000; color: #fff; font-family: 'Inter', sans-serif; margin: 0; 
-            /* This gives it the length you like without breaking the script */
-            padding: 80px 20px 300px; 
+            padding: 80px 20px 400px; 
             background-image: radial-gradient(circle at center, #001a4d 0%, #000 100%);
         }
-        .engine-wrap { max-width: 900px; margin: 0 auto; }
-        .banner { text-align: center; margin-bottom: 60px; }
-        .banner img { width: 100%; max-width: 700px; filter: drop-shadow(0 0 20px rgba(0,85,255,0.4)); }
+        .engine-wrap { max-width: 850px; margin: 0 auto; }
+        .banner { text-align: center; margin-bottom: 40px; }
+        .banner img { width: 100%; max-width: 600px; filter: drop-shadow(0 0 15px rgba(0,85,255,0.3)); }
         
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px; }
-        .stat-card { background: rgba(255,255,255,0.05); padding: 30px; border-radius: 20px; text-align: center; border: 1px solid #111; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: rgba(255,255,255,0.03); padding: 25px; border-radius: 20px; text-align: center; border: 1px solid #222; }
         .stat-card span { display: block; font-size: 42px; font-weight: 900; color: var(--electric); }
-        .stat-card label { font-size: 10px; letter-spacing: 2px; color: #555; text-transform: uppercase; }
+        .stat-card label { font-size: 9px; letter-spacing: 2px; color: #444; text-transform: uppercase; }
 
-        .panel { background: rgba(0,0,0,0.6); border: 1px solid #222; border-radius: 25px; padding: 40px; margin-bottom: 40px; }
-        .control-group { margin-bottom: 25px; }
-        .label-row { display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; color: var(--accent); margin-bottom: 10px; }
+        .panel { background: rgba(0,0,0,0.5); border: 1px solid #111; border-radius: 25px; padding: 35px; margin-bottom: 30px; }
+        .control-group { margin-bottom: 20px; }
+        .label-row { display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; color: var(--accent); margin-bottom: 8px; }
         
         input[type="range"] { -webkit-appearance: none; width: 100%; height: 4px; background: #222; outline: none; }
-        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; background: #fff; border-radius: 50%; cursor: pointer; border: 3px solid var(--accent); }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; background: #fff; border-radius: 50%; cursor: pointer; border: 3px solid var(--accent); }
 
-        .chart-container { background: #000; border: 1px solid #111; border-radius: 20px; padding: 20px; height: 400px; margin-bottom: 50px; }
+        .chart-container { background: #000; border: 1px solid #111; border-radius: 20px; padding: 20px; height: 350px; margin-bottom: 40px; }
         
-        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        button { padding: 22px; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; }
+        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        button { padding: 20px; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; transition: 0.2s; }
         .btn-main { background: var(--accent); color: #fff; }
         .btn-sec { background: transparent; color: #fff; border: 1px solid #333; }
-        
-        .vision { margin-top: 150px; text-align: center; color: #333; font-size: 12px; border-top: 1px solid #111; padding-top: 40px; }
+        button:hover { background: #fff; color: #000; transform: translateY(-2px); }
     </style>
 </head>
 <body>
@@ -47,26 +45,26 @@
     </div>
 
     <div class="stats-grid">
-        <div class="stat-card"><span id="gMean">48%</span><label>Global Identity Mean</label></div>
-        <div class="stat-card"><span id="lMean">50%</span><label>Local Neural Mean</label></div>
+        <div class="stat-card"><span id="lMean">50%</span><label>LOCAL NEURAL MEAN</label></div>
+        <div class="stat-card"><span id="gMean">48%</span><label>GLOBAL IDENTITY MEAN</label></div>
     </div>
 
     <div class="panel">
         <div class="control-group">
             <div class="label-row"><span>QUALITY_SERVICE</span><span id="qsV">50%</span></div>
-            <input type="range" id="qs" value="50" oninput="runCalculus()">
+            <input type="range" id="qs" value="50" oninput="engineAction()">
         </div>
         <div class="control-group">
             <div class="label-row"><span>OPERATIONAL_INTEL</span><span id="oiV">50%</span></div>
-            <input type="range" id="oi" value="50" oninput="runCalculus()">
+            <input type="range" id="oi" value="50" oninput="engineAction()">
         </div>
         <div class="control-group">
             <div class="label-row"><span>INTERNAL_CAPACITY</span><span id="icV">50%</span></div>
-            <input type="range" id="ic" value="50" oninput="runCalculus()">
+            <input type="range" id="ic" value="50" oninput="engineAction()">
         </div>
         <div class="control-group">
             <div class="label-row"><span>ENGINE_POWER</span><span id="epV">50%</span></div>
-            <input type="range" id="ep" value="50" oninput="runCalculus()">
+            <input type="range" id="ep" value="50" oninput="engineAction()">
         </div>
     </div>
 
@@ -75,38 +73,15 @@
     </div>
 
     <div class="btn-row">
-        <button class="btn-main" onclick="alert('Telemetry Sync Successful')">Commit Telemetry</button>
+        <button class="btn-main" onclick="alert('TELEMETRY SECURED')">Commit Telemetry</button>
         <button class="btn-sec" onclick="window.print()">Archive HR Report</button>
-    </div>
-
-    <div class="vision">
-        STILLFLARE LABS // NEURO-OPERATIONAL // v3.4.0 RESTORED
     </div>
 </div>
 
 <script>
-    let myChart;
+    let chart;
 
-    function init() {
-        const ctx = document.getElementById('maasChart').getContext('2d');
-        myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['-4', '-3', '-2', '-1', 'NOW'],
-                datasets: [{
-                    data: [45, 48, 42, 47, 50],
-                    borderColor: '#0055ff',
-                    tension: 0.4,
-                    fill: true,
-                    backgroundColor: 'rgba(0,85,255,0.1)'
-                }]
-            },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-        runCalculus(); 
-    }
-
-    function runCalculus() {
+    function engineAction() {
         const q = parseInt(document.getElementById('qs').value);
         const o = parseInt(document.getElementById('oi').value);
         const i = parseInt(document.getElementById('ic').value);
@@ -121,13 +96,34 @@
         document.getElementById('lMean').innerText = mean + '%';
         document.getElementById('gMean').innerText = (mean - 2) + '%';
         
-        if(myChart) {
-            myChart.data.datasets[0].data[4] = mean;
-            myChart.update();
+        if(chart) {
+            chart.data.datasets[0].data[4] = mean;
+            chart.update();
         }
     }
 
-    window.onload = init;
+    window.onload = function() {
+        // Fail-safe: Check if Chart.js loaded
+        if (typeof Chart !== 'undefined') {
+            const ctx = document.getElementById('maasChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['T-4', 'T-3', 'T-2', 'T-1', 'NOW'],
+                    datasets: [{
+                        data: [45, 48, 42, 47, 50],
+                        borderColor: '#0055ff',
+                        backgroundColor: 'rgba(0,85,255,0.1)',
+                        fill: true, tension: 0.4
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+        } else {
+            console.error("Connection to Chart library failed.");
+        }
+        engineAction();
+    };
 </script>
 </body>
 </html>
