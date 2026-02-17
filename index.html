@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STILLFLARE // MAAS ENGINE v3.5 (LIVE DATA)</title>
+    <title>STILLFLARE // MAAS ENGINE</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --accent: #0055ff; --electric: #00d4ff; }
         body { 
             background: #000; color: #fff; font-family: 'Inter', sans-serif; margin: 0; 
-            padding: 80px 20px 400px; 
+            padding: 60px 20px; 
             background-image: radial-gradient(circle at center, #001a4d 0%, #000 100%);
         }
         .engine-wrap { max-width: 850px; margin: 0 auto; }
@@ -25,7 +25,7 @@
         .control-group { margin-bottom: 20px; }
         .label-row { display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; color: var(--accent); margin-bottom: 8px; }
         
-        input[type="range"] { -webkit-appearance: none; width: 100%; height: 4px; background: #222; outline: none; }
+        input[type="range"] { -webkit-appearance: none; width: 100%; height: 4px; background: #222; outline: none; border-radius: 2px; }
         input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; background: #fff; border-radius: 50%; cursor: pointer; border: 3px solid var(--accent); }
 
         .chart-container { background: #000; border: 1px solid #111; border-radius: 20px; padding: 20px; height: 350px; margin-bottom: 40px; }
@@ -35,8 +35,6 @@
         .btn-main { background: var(--accent); color: #fff; }
         .btn-sec { background: transparent; color: #fff; border: 1px solid #333; }
         button:hover { background: #fff; color: #000; transform: translateY(-2px); }
-
-        .status-tag { text-align: center; font-size: 10px; color: var(--accent); margin-top: -20px; margin-bottom: 20px; letter-spacing: 1px; }
     </style>
 </head>
 <body>
@@ -46,29 +44,27 @@
         <img src="https://raw.githubusercontent.com/stillflareentertainment-web/stillflare-lab/main/STILLFLARE%20BANNER.png">
     </div>
 
-    <div id="connectionStatus" class="status-tag">INITIALIZING DATA LINK...</div>
-
     <div class="stats-grid">
-        <div class="stat-card"><span id="lMean">--</span><label>LOCAL NEURAL MEAN</label></div>
-        <div class="stat-card"><span id="gMean">--</span><label>GLOBAL IDENTITY MEAN</label></div>
+        <div class="stat-card"><span id="lMean">50%</span><label>LOCAL NEURAL MEAN</label></div>
+        <div class="stat-card"><span id="gMean">48%</span><label>GLOBAL IDENTITY MEAN</label></div>
     </div>
 
     <div class="panel">
         <div class="control-group">
-            <div class="label-row"><span>QUALITY_SERVICE</span><span id="qsV">--</span></div>
-            <input type="range" id="qs" value="50" oninput="manualUpdate()">
+            <div class="label-row"><span>QUALITY_SERVICE</span><span id="qsV">50%</span></div>
+            <input type="range" id="qs" value="50" oninput="runEngine()">
         </div>
         <div class="control-group">
-            <div class="label-row"><span>OPERATIONAL_INTEL</span><span id="oiV">--</span></div>
-            <input type="range" id="oi" value="50" oninput="manualUpdate()">
+            <div class="label-row"><span>OPERATIONAL_INTEL</span><span id="oiV">50%</span></div>
+            <input type="range" id="oi" value="50" oninput="runEngine()">
         </div>
         <div class="control-group">
-            <div class="label-row"><span>INTERNAL_CAPACITY</span><span id="icV">--</span></div>
-            <input type="range" id="ic" value="50" oninput="manualUpdate()">
+            <div class="label-row"><span>INTERNAL_CAPACITY</span><span id="icV">50%</span></div>
+            <input type="range" id="ic" value="50" oninput="runEngine()">
         </div>
         <div class="control-group">
-            <div class="label-row"><span>ENGINE_POWER</span><span id="epV">--</span></div>
-            <input type="range" id="ep" value="50" oninput="manualUpdate()">
+            <div class="label-row"><span>ENGINE_POWER</span><span id="epV">50%</span></div>
+            <input type="range" id="ep" value="50" oninput="runEngine()">
         </div>
     </div>
 
@@ -84,35 +80,8 @@
 
 <script>
     let chart;
-    const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRO9rzX0DOaCBEppRFcRXtsIxxgK6fT6KIxAjFhq44PaoBEAtEy8fwjTEFNc9QZofF2P9srq0eYT4c/pub?gid=718698897&single=true&output=csv';
 
-    // 1. Fetch Data from Google Sheet
-    async function fetchGoogleData() {
-        try {
-            const response = await fetch(csvUrl);
-            const data = await response.text();
-            const rows = data.split('\n');
-            // Assuming Row 2 contains your values (QS, OI, IC, EP)
-            const values = rows[1].split(','); 
-
-            // Update Sliders based on Google Sheet
-            document.getElementById('qs').value = values[0] || 50;
-            document.getElementById('oi').value = values[1] || 50;
-            document.getElementById('ic').value = values[2] || 50;
-            document.getElementById('ep').value = values[3] || 50;
-
-            document.getElementById('connectionStatus').innerText = "LIVE DATA LINK ACTIVE";
-            document.getElementById('connectionStatus').style.color = "#00ff88";
-            
-            manualUpdate();
-        } catch (error) {
-            console.error("Link Error:", error);
-            document.getElementById('connectionStatus').innerText = "LINK FAILED - USING MANUAL OVERRIDE";
-            manualUpdate();
-        }
-    }
-
-    function manualUpdate() {
+    function runEngine() {
         const q = parseInt(document.getElementById('qs').value);
         const o = parseInt(document.getElementById('oi').value);
         const i = parseInt(document.getElementById('ic').value);
@@ -148,8 +117,7 @@
             },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
         });
-        
-        fetchGoogleData();
+        runEngine();
     };
 </script>
 </body>
