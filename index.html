@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STILLFLARE // MAAS ENGINE v3.4.6</title>
+    <title>STILLFLARE // MAAS ENGINE v3.4.7</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --accent: #0055ff; --electric: #00d4ff; }
@@ -46,7 +46,7 @@
         <img src="https://raw.githubusercontent.com/stillflareentertainment-web/stillflare-lab/main/STILLFLARE%20BANNER.png">
     </div>
 
-    <div id="syncStatus">INITIALIZING SECURE LINK...</div>
+    <div id="syncStatus">SYSTEM SECURE // READY</div>
 
     <div class="stats-grid">
         <div class="stat-card"><span id="lMean">50%</span><label>LOCAL NEURAL MEAN</label></div>
@@ -84,8 +84,7 @@
 
 <script>
     let chart;
-    // Updated with the URL from your 8:52 PM Deployment
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbzSwvLqj1VZVR7qrTTW2hW9go9TLqbCNYhcQF0rZhEIOulu94xJ2jXdxhTBPDRae2-/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbxSW_YsXg36AT7URM0ukWJPjP_QSxQfBX012BiLnhbvSIjKwqR-75k3qJo4YIwGORk4BA/exec';
 
     function runEngine() {
         const q = parseInt(document.getElementById('qs').value);
@@ -114,17 +113,19 @@
         const i = document.getElementById('ic').value;
         const e = document.getElementById('ep').value;
         
+        // This format builds a "GET" request that Google can easily read
         const finalURL = `${scriptURL}?QUALITY_SERVICE=${q}&OPERATIONAL_INTEL=${o}&INTERNAL_CAPACITY=${i}&ENGINE_POWER=${e}`;
 
-        document.getElementById('syncStatus').innerText = "COMMITTING TELEMETRY...";
+        document.getElementById('syncStatus').innerText = "SENDING TELEMETRY...";
 
-        fetch(finalURL, { method: 'POST', mode: 'no-cors' })
+        // Simplified Fetch for Google Apps Script compatibility
+        fetch(finalURL, { mode: 'no-cors' })
             .then(() => {
-                alert('TELEMETRY SECURED IN GOOGLE SHEET');
+                alert('TELEMETRY SECURED');
                 document.getElementById('syncStatus').innerText = "SYNC COMPLETE";
             })
             .catch(err => {
-                alert('SYNC ERROR');
+                alert('CONNECTION ERROR');
                 console.error(err);
             });
     }
@@ -158,10 +159,7 @@
             </head>
             <body>
                 <div class="header">
-                    <div>
-                        <h1>STILLFLARE LABS</h1>
-                        <div style="font-size: 12px; color: #0055ff;">MAAS ENGINE // OPERATIONAL AUDIT</div>
-                    </div>
+                    <div><h1>STILLFLARE LABS</h1><div style="font-size: 12px; color: #0055ff;">MAAS ENGINE // OPERATIONAL AUDIT</div></div>
                     <div class="meta">REF: SF-2026-ARC<br>DATED: ${timestamp}</div>
                 </div>
                 <div class="summary-box">
@@ -173,13 +171,6 @@
                     <div class="data-item"><span>Operational Intel (OI)</span> <b>${o}</b></div>
                     <div class="data-item"><span>Internal Capacity (IC)</span> <b>${i}</b></div>
                     <div class="data-item"><span>Engine Power (EP)</span> <b>${e}</b></div>
-                </div>
-                <div class="glossary">
-                    <h3>Metric Definitions</h3>
-                    <p><b>Quality Service:</b> Measurement of output reliability and user-facing delivery standards.</p>
-                    <p><b>Operational Intel:</b> Data-driven insights and the efficiency of neural processing layers.</p>
-                    <p><b>Internal Capacity:</b> The structural integrity and resource availability of the decentralized node.</p>
-                    <p><b>Engine Power:</b> The raw kinetic output of the MAAS system under current load conditions.</p>
                 </div>
                 <script>window.print();<\/script>
             </body>
@@ -203,7 +194,6 @@
             },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
         });
-        document.getElementById('syncStatus').innerText = "SYSTEM SECURE // READY";
         runEngine();
     };
 </script>
