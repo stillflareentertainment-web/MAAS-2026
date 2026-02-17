@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STILLFLARE // MAAS ENGINE v3.4.8</title>
+    <title>STILLFLARE // MAAS ENGINE v3.5 (LIVE DATA)</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --accent: #0055ff; --electric: #00d4ff; }
@@ -35,6 +35,8 @@
         .btn-main { background: var(--accent); color: #fff; }
         .btn-sec { background: transparent; color: #fff; border: 1px solid #333; }
         button:hover { background: #fff; color: #000; transform: translateY(-2px); }
+
+        .status-tag { text-align: center; font-size: 10px; color: var(--accent); margin-top: -20px; margin-bottom: 20px; letter-spacing: 1px; }
     </style>
 </head>
 <body>
@@ -44,27 +46,29 @@
         <img src="https://raw.githubusercontent.com/stillflareentertainment-web/stillflare-lab/main/STILLFLARE%20BANNER.png">
     </div>
 
+    <div id="connectionStatus" class="status-tag">INITIALIZING DATA LINK...</div>
+
     <div class="stats-grid">
-        <div class="stat-card"><span id="lMean">50%</span><label>LOCAL NEURAL MEAN</label></div>
-        <div class="stat-card"><span id="gMean">48%</span><label>GLOBAL IDENTITY MEAN</label></div>
+        <div class="stat-card"><span id="lMean">--</span><label>LOCAL NEURAL MEAN</label></div>
+        <div class="stat-card"><span id="gMean">--</span><label>GLOBAL IDENTITY MEAN</label></div>
     </div>
 
     <div class="panel">
         <div class="control-group">
-            <div class="label-row"><span>QUALITY_SERVICE</span><span id="qsV">50%</span></div>
-            <input type="range" id="qs" value="50" oninput="engineAction()">
+            <div class="label-row"><span>QUALITY_SERVICE</span><span id="qsV">--</span></div>
+            <input type="range" id="qs" value="50" oninput="manualUpdate()">
         </div>
         <div class="control-group">
-            <div class="label-row"><span>OPERATIONAL_INTEL</span><span id="oiV">50%</span></div>
-            <input type="range" id="oi" value="50" oninput="engineAction()">
+            <div class="label-row"><span>OPERATIONAL_INTEL</span><span id="oiV">--</span></div>
+            <input type="range" id="oi" value="50" oninput="manualUpdate()">
         </div>
         <div class="control-group">
-            <div class="label-row"><span>INTERNAL_CAPACITY</span><span id="icV">50%</span></div>
-            <input type="range" id="ic" value="50" oninput="engineAction()">
+            <div class="label-row"><span>INTERNAL_CAPACITY</span><span id="icV">--</span></div>
+            <input type="range" id="ic" value="50" oninput="manualUpdate()">
         </div>
         <div class="control-group">
-            <div class="label-row"><span>ENGINE_POWER</span><span id="epV">50%</span></div>
-            <input type="range" id="ep" value="50" oninput="engineAction()">
+            <div class="label-row"><span>ENGINE_POWER</span><span id="epV">--</span></div>
+            <input type="range" id="ep" value="50" oninput="manualUpdate()">
         </div>
     </div>
 
@@ -80,8 +84,35 @@
 
 <script>
     let chart;
+    const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRO9rzX0DOaCBEppRFcRXtsIxxgK6fT6KIxAjFhq44PaoBEAtEy8fwjTEFNc9QZofF2P9srq0eYT4c/pub?gid=718698897&single=true&output=csv';
 
-    function engineAction() {
+    // 1. Fetch Data from Google Sheet
+    async function fetchGoogleData() {
+        try {
+            const response = await fetch(csvUrl);
+            const data = await response.text();
+            const rows = data.split('\n');
+            // Assuming Row 2 contains your values (QS, OI, IC, EP)
+            const values = rows[1].split(','); 
+
+            // Update Sliders based on Google Sheet
+            document.getElementById('qs').value = values[0] || 50;
+            document.getElementById('oi').value = values[1] || 50;
+            document.getElementById('ic').value = values[2] || 50;
+            document.getElementById('ep').value = values[3] || 50;
+
+            document.getElementById('connectionStatus').innerText = "LIVE DATA LINK ACTIVE";
+            document.getElementById('connectionStatus').style.color = "#00ff88";
+            
+            manualUpdate();
+        } catch (error) {
+            console.error("Link Error:", error);
+            document.getElementById('connectionStatus').innerText = "LINK FAILED - USING MANUAL OVERRIDE";
+            manualUpdate();
+        }
+    }
+
+    function manualUpdate() {
         const q = parseInt(document.getElementById('qs').value);
         const o = parseInt(document.getElementById('oi').value);
         const i = parseInt(document.getElementById('ic').value);
@@ -103,26 +134,22 @@
     }
 
     window.onload = function() {
-        // Fail-safe: Check if Chart.js loaded
-        if (typeof Chart !== 'undefined') {
-            const ctx = document.getElementById('maasChart').getContext('2d');
-            chart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['T-4', 'T-3', 'T-2', 'T-1', 'NOW'],
-                    datasets: [{
-                        data: [45, 48, 42, 47, 50],
-                        borderColor: '#0055ff',
-                        backgroundColor: 'rgba(0,85,255,0.1)',
-                        fill: true, tension: 0.4
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-            });
-        } else {
-            console.error("Connection to Chart library failed.");
-        }
-        engineAction();
+        const ctx = document.getElementById('maasChart').getContext('2d');
+        chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['T-4', 'T-3', 'T-2', 'T-1', 'NOW'],
+                datasets: [{
+                    data: [45, 48, 42, 47, 50],
+                    borderColor: '#0055ff',
+                    backgroundColor: 'rgba(0,85,255,0.1)',
+                    fill: true, tension: 0.4
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        });
+        
+        fetchGoogleData();
     };
 </script>
 </body>
