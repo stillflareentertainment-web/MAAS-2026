@@ -35,6 +35,14 @@
         .btn-main { background: var(--accent); color: #fff; }
         .btn-sec { background: transparent; color: #fff; border: 1px solid #333; }
         button:hover { background: #fff; color: #000; transform: translateY(-2px); }
+
+        /* Hides buttons and sliders when printing/saving PDF */
+        @media print {
+            .btn-row, .panel, input[type="range"] { display: none !important; }
+            body { background: #fff !important; color: #000 !important; padding: 0; }
+            .stat-card { border: 1px solid #ccc; color: #000 !important; }
+            .stat-card span { color: #0055ff !important; }
+        }
     </style>
 </head>
 <body>
@@ -74,7 +82,7 @@
 
     <div class="btn-row">
         <button class="btn-main" onclick="alert('TELEMETRY SECURED')">Commit Telemetry</button>
-        <button class="btn-sec" onclick="window.print()">Archive HR Report</button>
+        <button class="btn-sec" onclick="printReport()">Archive HR Report</button>
     </div>
 </div>
 
@@ -100,6 +108,24 @@
             chart.data.datasets[0].data[4] = mean;
             chart.update();
         }
+    }
+
+    // New Function: Opens the current view in a new tab for PDF saving
+    function printReport() {
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write('<html><head><title>STILLFLARE_HR_REPORT</title>');
+        // Copies the styles to the new window
+        printWindow.document.write('<style>' + document.head.innerHTML + '</style>');
+        printWindow.document.write('</head><body>');
+        // Copies the engine wrap content to the new window
+        printWindow.document.write(document.querySelector('.engine-wrap').innerHTML);
+        printWindow.document.write('</body></html>');
+        printWindow.document.close();
+        
+        // Brief delay to ensure content loads before print trigger
+        setTimeout(() => {
+            printWindow.print();
+        }, 500);
     }
 
     window.onload = function() {
