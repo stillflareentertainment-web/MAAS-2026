@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STILLFLARE // MAAS ENGINE v3.4.4</title>
+    <title>STILLFLARE // MAAS ENGINE v3.4.6</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --accent: #0055ff; --electric: #00d4ff; }
@@ -84,8 +84,8 @@
 
 <script>
     let chart;
-    // Updated with your Version 5 Deployment URL
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbwAYyEcePpXkZntN-Wtx_WJrtKQGO4F_8colHI4uTSPV9H0yfql1ay8oFoJFTSWiu6Fzg/exec';
+    // Updated with the URL from your 8:52 PM Deployment
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzSwvLqj1VZVR7qrTTW2hW9go9TLqbCNYhcQF0rZhEIOulu94xJ2jXdxhTBPDRae2-/exec';
 
     function runEngine() {
         const q = parseInt(document.getElementById('qs').value);
@@ -114,7 +114,6 @@
         const i = document.getElementById('ic').value;
         const e = document.getElementById('ep').value;
         
-        // This format matches your spreadsheet headers exactly
         const finalURL = `${scriptURL}?QUALITY_SERVICE=${q}&OPERATIONAL_INTEL=${o}&INTERNAL_CAPACITY=${i}&ENGINE_POWER=${e}`;
 
         document.getElementById('syncStatus').innerText = "COMMITTING TELEMETRY...";
@@ -173,7 +172,7 @@
                     <div class="data-item"><span>Quality Service (QS)</span> <b>${q}</b></div>
                     <div class="data-item"><span>Operational Intel (OI)</span> <b>${o}</b></div>
                     <div class="data-item"><span>Internal Capacity (IC)</span> <b>${i}</b></div>
-                    <div class="data-item)<span>Engine Power (EP)</span> <b>${e}</b></div>
+                    <div class="data-item"><span>Engine Power (EP)</span> <b>${e}</b></div>
                 </div>
                 <div class="glossary">
                     <h3>Metric Definitions</h3>
