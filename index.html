@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STILLFLARE // MAAS ENGINE</title>
+    <title>STILLFLARE // MAAS ENGINE v3.4.3</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --accent: #0055ff; --electric: #00d4ff; }
@@ -35,6 +35,8 @@
         .btn-main { background: var(--accent); color: #fff; }
         .btn-sec { background: transparent; color: #fff; border: 1px solid #333; }
         button:hover { background: #fff; color: #000; transform: translateY(-2px); }
+        
+        #syncStatus { text-align: center; font-size: 10px; color: var(--accent); margin-top: -20px; margin-bottom: 20px; }
     </style>
 </head>
 <body>
@@ -43,6 +45,8 @@
     <div class="banner">
         <img src="https://raw.githubusercontent.com/stillflareentertainment-web/stillflare-lab/main/STILLFLARE%20BANNER.png">
     </div>
+
+    <div id="syncStatus">INITIALIZING SECURE LINK...</div>
 
     <div class="stats-grid">
         <div class="stat-card"><span id="lMean">50%</span><label>LOCAL NEURAL MEAN</label></div>
@@ -73,13 +77,34 @@
     </div>
 
     <div class="btn-row">
-        <button class="btn-main" onclick="alert('TELEMETRY SECURED')">Commit Telemetry</button>
+        <button class="btn-main" onclick="commitToGoogle()">Commit Telemetry</button>
         <button class="btn-sec" onclick="printReport()">Archive HR Report</button>
     </div>
 </div>
 
 <script>
     let chart;
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwfdRWCHflPHvGsT47P0tqSnZV1FEVhFQMwsu6QndL6GsqkKyZrLgJPpJ68f6RgtBS7cQ/exec';
+    const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRO9rzX0DOaCBEppRFcRXtsIxxgK6fT6KIxAjFhq44PaoBEAtEy8fwjTEFNc9QZofF2P9srq0eYT4c/pub?gid=718698897&single=true&output=csv';
+
+    async function loadInitialData() {
+        try {
+            const res = await fetch(csvUrl);
+            const text = await res.text();
+            const row = text.split('\n')[1].split(',');
+            if(row.length >= 4) {
+                document.getElementById('qs').value = row[1];
+                document.getElementById('oi').value = row[2];
+                document.getElementById('ic').value = row[3];
+                document.getElementById('ep').value = row[4];
+            }
+            document.getElementById('syncStatus').innerText = "LIVE DATA LINK ACTIVE";
+            runEngine();
+        } catch (e) {
+            document.getElementById('syncStatus').innerText = "MANUAL OVERRIDE ACTIVE";
+            runEngine();
+        }
+    }
 
     function runEngine() {
         const q = parseInt(document.getElementById('qs').value);
@@ -102,6 +127,27 @@
         }
     }
 
+    function commitToGoogle() {
+        const q = document.getElementById('qs').value;
+        const o = document.getElementById('oi').value;
+        const i = document.getElementById('ic').value;
+        const e = document.getElementById('ep').value;
+        
+        const finalURL = `${scriptURL}?QUALITY_SERVICE=${q}&OPERATIONAL_INTEL=${o}&INTERNAL_CAPACITY=${i}&ENGINE_POWER=${e}`;
+
+        document.getElementById('syncStatus').innerText = "COMMITTING TELEMETRY...";
+
+        fetch(finalURL, { method: 'POST', mode: 'no-cors' })
+            .then(() => {
+                alert('TELEMETRY SECURED IN GOOGLE SHEET');
+                document.getElementById('syncStatus').innerText = "SYNC COMPLETE";
+            })
+            .catch(err => {
+                alert('SYNC ERROR');
+                console.error(err);
+            });
+    }
+
     function printReport() {
         const q = document.getElementById('qsV').innerText;
         const o = document.getElementById('oiV').innerText;
@@ -114,7 +160,7 @@
         reportWindow.document.write(`
             <html>
             <head>
-                <title>STILLFLARE_MAAS_AUDIT_${Date.now()}</title>
+                <title>STILLFLARE_MAAS_AUDIT</title>
                 <style>
                     body { font-family: 'Helvetica', sans-serif; padding: 50px; color: #111; line-height: 1.6; }
                     .header { border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end; }
@@ -127,7 +173,6 @@
                     .data-item b { font-size: 14px; }
                     .glossary { margin-top: 50px; font-size: 11px; color: #444; }
                     .glossary h3 { border-bottom: 1px solid #ccc; padding-bottom: 5px; font-size: 12px; text-transform: uppercase; }
-                    @media print { .no-print { display: none; } }
                 </style>
             </head>
             <body>
@@ -136,25 +181,18 @@
                         <h1>STILLFLARE LABS</h1>
                         <div style="font-size: 12px; color: #0055ff;">MAAS ENGINE // OPERATIONAL AUDIT</div>
                     </div>
-                    <div class="meta">
-                        REF: SF-2026-ARC<br>
-                        DATED: ${timestamp}
-                    </div>
+                    <div class="meta">REF: SF-2026-ARC<br>DATED: ${timestamp}</div>
                 </div>
-
                 <div class="summary-box">
                     <h2>NEURAL BASELINE RESULTS</h2>
                     <div style="font-size: 32px; font-weight: bold;">${lm} OUTPUT STRENGTH</div>
-                    <p style="font-size: 11px; margin: 5px 0 0 0;">This score represents the local mean of current operational capacity.</p>
                 </div>
-
                 <div class="data-grid">
                     <div class="data-item"><span>Quality Service (QS)</span> <b>${q}</b></div>
                     <div class="data-item"><span>Operational Intel (OI)</span> <b>${o}</b></div>
                     <div class="data-item"><span>Internal Capacity (IC)</span> <b>${i}</b></div>
                     <div class="data-item"><span>Engine Power (EP)</span> <b>${e}</b></div>
                 </div>
-
                 <div class="glossary">
                     <h3>Metric Definitions</h3>
                     <p><b>Quality Service:</b> Measurement of output reliability and user-facing delivery standards.</p>
@@ -162,11 +200,6 @@
                     <p><b>Internal Capacity:</b> The structural integrity and resource availability of the decentralized node.</p>
                     <p><b>Engine Power:</b> The raw kinetic output of the MAAS system under current load conditions.</p>
                 </div>
-
-                <p style="margin-top: 100px; font-size: 9px; text-align: center; color: #999;">
-                    CONFIDENTIAL // STILLFLARE ENTERTAINMENT WEB // DECENTRALIZED PROTOCOL 3.4
-                </p>
-
                 <script>window.print();<\/script>
             </body>
             </html>
@@ -189,7 +222,7 @@
             },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
         });
-        runEngine();
+        loadInitialData();
     };
 </script>
 </body>
