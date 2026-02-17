@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STILLFLARE // MAAS ENGINE v3.4.7</title>
+    <title>STILLFLARE // MAAS ENGINE v3.4.8</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --accent: #0055ff; --electric: #00d4ff; }
@@ -46,7 +46,7 @@
         <img src="https://raw.githubusercontent.com/stillflareentertainment-web/stillflare-lab/main/STILLFLARE%20BANNER.png">
     </div>
 
-    <div id="syncStatus">SYSTEM SECURE // READY</div>
+    <div id="syncStatus">INITIALIZING SECURE LINK...</div>
 
     <div class="stats-grid">
         <div class="stat-card"><span id="lMean">50%</span><label>LOCAL NEURAL MEAN</label></div>
@@ -84,7 +84,33 @@
 
 <script>
     let chart;
+    // WRITING DATA: Your Web App URL
     const scriptURL = 'https://script.google.com/macros/s/AKfycbxSW_YsXg36AT7URM0ukWJPjP_QSxQfBX012BiLnhbvSIjKwqR-75k3qJo4YIwGORk4BA/exec';
+    
+    // READING DATA: Your Public CSV URL
+    const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTIiKJHhXR3IINz0BhZly2cmZ339GfhSwjovo1DsDqRjLdmun4OzzMWR5PppQG2rXs4z2SmcwpRmTtM/pub?gid=0&single=true&output=csv';
+
+    async function loadInitialData() {
+        try {
+            const res = await fetch(csvUrl);
+            const text = await res.text();
+            // Splits the CSV text to find the most recent row of data
+            const rows = text.split('\n');
+            const lastRow = rows[rows.length - 1].split(',');
+            
+            if(lastRow.length >= 4) {
+                document.getElementById('qs').value = lastRow[1];
+                document.getElementById('oi').value = lastRow[2];
+                document.getElementById('ic').value = lastRow[3];
+                document.getElementById('ep').value = lastRow[4];
+            }
+            document.getElementById('syncStatus').innerText = "LIVE DATA LINK ACTIVE";
+            runEngine();
+        } catch (e) {
+            document.getElementById('syncStatus').innerText = "MANUAL OVERRIDE ACTIVE";
+            runEngine();
+        }
+    }
 
     function runEngine() {
         const q = parseInt(document.getElementById('qs').value);
@@ -113,12 +139,10 @@
         const i = document.getElementById('ic').value;
         const e = document.getElementById('ep').value;
         
-        // This format builds a "GET" request that Google can easily read
         const finalURL = `${scriptURL}?QUALITY_SERVICE=${q}&OPERATIONAL_INTEL=${o}&INTERNAL_CAPACITY=${i}&ENGINE_POWER=${e}`;
 
         document.getElementById('syncStatus').innerText = "SENDING TELEMETRY...";
 
-        // Simplified Fetch for Google Apps Script compatibility
         fetch(finalURL, { mode: 'no-cors' })
             .then(() => {
                 alert('TELEMETRY SECURED');
@@ -153,14 +177,12 @@
                     .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px; }
                     .data-item { border-bottom: 1px solid #eee; padding: 10px 0; display: flex; justify-content: space-between; }
                     .data-item b { font-size: 14px; }
-                    .glossary { margin-top: 50px; font-size: 11px; color: #444; }
-                    .glossary h3 { border-bottom: 1px solid #ccc; padding-bottom: 5px; font-size: 12px; text-transform: uppercase; }
                 </style>
             </head>
             <body>
                 <div class="header">
                     <div><h1>STILLFLARE LABS</h1><div style="font-size: 12px; color: #0055ff;">MAAS ENGINE // OPERATIONAL AUDIT</div></div>
-                    <div class="meta">REF: SF-2026-ARC<br>DATED: ${timestamp}</div>
+                    <div class="meta">DATED: ${timestamp}</div>
                 </div>
                 <div class="summary-box">
                     <h2>NEURAL BASELINE RESULTS</h2>
@@ -194,7 +216,7 @@
             },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
         });
-        runEngine();
+        loadInitialData();
     };
 </script>
 </body>
